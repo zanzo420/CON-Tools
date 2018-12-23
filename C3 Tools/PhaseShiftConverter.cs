@@ -232,194 +232,227 @@ namespace C3Tools
         {
             var counter = 0;
             var success = 0;
-            foreach (var file in inputFiles.Where(File.Exists).TakeWhile(file => !backgroundWorker1.CancellationPending))
+
+            foreach (var file in inputFiles)
             {
-                try
+                if (!File.Exists(file))
+                    break;
+
+                if (backgroundWorker1.CancellationPending)
+                    break;
+
+                ////
+                // read
+                ////
+
+                if (VariousFunctions.ReadFileType(file) != XboxFileType.STFS)
+                    continue;
+
+                Song.NewSong();
+                Song.ReplaceGenreWithSub = useSubgenreInsteadOfGenreToolStripMenuItem.Checked;
+
+                if (!Directory.Exists(PSFolder))
                 {
-                    if (VariousFunctions.ReadFileType(file) != XboxFileType.STFS) continue;
-                    Song.NewSong();
-                    Song.ReplaceGenreWithSub = useSubgenreInsteadOfGenreToolStripMenuItem.Checked;
+                    Directory.CreateDirectory(PSFolder);
+                }
 
-                    try
+                counter++;
+
+                Parser.ExtractDTA(file);
+                Parser.ReadDTA(Parser.DTA);
+
+                if (Parser.Songs.Count > 1)
+                {
+                    Log("File " + Path.GetFileName(file) + " is a pack, try dePACKing first, skipping...");
+                    continue;
+                }
+
+                if (!Parser.Songs.Any())
+                {
+                    Log("There was an error processing the songs.dta file");
+                    continue;
+                }
+
+                if (loadDTA())
+                {
+                    Log("Loaded and processed songs.dta file for song #" + counter + " successfully");
+                    Log("Song #" + counter + " is " + Song.Artist + " - " + Song.Name);
+                }
+                else
+                {
+                    return false;
+                }
+
+                var songFolder = PSFolder + Tools.CleanString(Song.Artist, false) + " - " +
+                                 Tools.CleanString(Song.Name, false) + "\\";
+                if (!Directory.Exists(songFolder))
+                {
+                    Directory.CreateDirectory(songFolder);
+                }
+
+                var internal_name = Parser.Songs[0].InternalName;
+
+                var xPackage = new STFSPackage(file);
+                if (!xPackage.ParseSuccess)
+                {
+                    Log("Failed to parse '" + Path.GetFileName(file) + "'");
+                    Log("Skipping this file");
+                    continue;
+                }
+
+                var xArt = xPackage.GetFile("songs/" + internal_name + "/gen/" + internal_name + "_keep.png_xbox");
+                if (xArt != null)
+                {
+                    var newart = songFolder + "album.png_xbox";
+                    if (xArt.ExtractToFile(newart))
                     {
-                        if (!Directory.Exists(PSFolder))
-                        {
-                            Directory.CreateDirectory(PSFolder);
-                        }
-                        counter++;
-                        Parser.ExtractDTA(file);
-                        Parser.ReadDTA(Parser.DTA);
-                        if (Parser.Songs.Count > 1)
-                        {
-                            Log("File " + Path.GetFileName(file) + " is a pack, try dePACKing first, skipping...");
-                            continue;
-                        }
-                        if (!Parser.Songs.Any())
-                        {
-                            Log("There was an error processing the songs.dta file");
-                            continue;
-                        }
-                        if (loadDTA())
-                        {
-                            Log("Loaded and processed songs.dta file for song #" + counter + " successfully");
-                            Log("Song #" + counter + " is " + Song.Artist + " - " + Song.Name);
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                        
-                        var songfolder = PSFolder + Tools.CleanString(Song.Artist,false) + " - " + Tools.CleanString(Song.Name, false) + "\\";
-                        if (!Directory.Exists(songfolder))
-                        {
-                            Directory.CreateDirectory(songfolder);
-                        }
-                        var internal_name = Parser.Songs[0].InternalName;
+                        Log("Extracted album art file " + internal_name + "_keep.png_xbox successfully");
+                        fromXbox(newart);
+                    }
+                    else
+                    {
+                        Log("There was a problem extracting the album art file");
+                    }
+                }
+                else
+                {
+                    Log("WARNING: Did not find album art file in that CON file");
+                }
 
-                        var xPackage = new STFSPackage(file);
-                        if (!xPackage.ParseSuccess)
-                        {
-                            Log("Failed to parse '" + Path.GetFileName(file) + "'");
-                            Log("Skipping this file");
-                            continue;
-                        }
-                        var xArt = xPackage.GetFile("songs/" + internal_name + "/gen/" + internal_name + "_keep.png_xbox");
-                        if (xArt != null)
-                        {
-                            var newart = songfolder + "album.png_xbox";
-                            if (xArt.ExtractToFile(newart))
-                            {
-                                Log("Extracted album art file " + internal_name + "_keep.png_xbox successfully");
-                                fromXbox(newart);
-                            }
-                            else
-                            {
-                                Log("There was a problem extracting the album art file");
-                            }
-                        }
-                        else
-                        {
-                            Log("WARNING: Did not find album art file in that CON file");
-                        }
-                        var xMIDI = xPackage.GetFile("songs/" + internal_name + "/" + internal_name + ".mid");
-                        if (xMIDI != null)
-                        {
-                            var newmidi = songfolder + "notes.mid";
-                            if (xMIDI.ExtractToFile(newmidi))
-                            {
-                                Log("Extracted MIDI file " + internal_name + ".mid successfully");
-                                ProcessMidi(newmidi);
-                            }
-                            else
-                            {
-                                Log("There was a problem extracting the MIDI file");
-                                Log("Skipping this song...");
-                                xPackage.CloseIO();
-                                continue;
-                            }
-                        }
-                        else
-                        {
-                            Log("ERROR: Did not find a MIDI file in that CON file!");
-                            Log("Skipping this song...");
-                            xPackage.CloseIO();
-                            continue;
-                        }
-                        var xMOGG = xPackage.GetFile("songs/" + internal_name + "/" + internal_name + ".mogg");
-                        if (xMOGG != null)
-                        {
-                            var newmogg = songfolder + internal_name + ".mogg";
-                            if (radioSeparate.Checked)
-                            {
-                                xPackage.CloseIO();
-                                SeparateAudio(file, newmogg, songfolder);
-                            }
-                            else if (radioDownmix.Checked)
-                            {
-                                xPackage.CloseIO();
-                                DownMixAudio(file, songfolder);
-                            }
-                            else
-                            {
-                                var msg = "Extracting audio file " + (radioAudacity.Checked ? "to send to Audacity" : "and leaving it as is");
-                                Log(msg);
-                                var mData = xMOGG.Extract();
-                                if (mData != null && mData.Length > 0)
-                                {
-                                    Log("Successfully extracted audio file '" + Path.GetFileName(newmogg) + "'");
-                                    if (radioAudacity.Checked)
-                                    {
-                                        Log("Sending audio file to Audacity now");
-                                        Tools.DecM(mData, false, false, DecryptMode.ToFile, newmogg);
-                                        Log(Tools.SendtoAudacity(newmogg));
-                                    }
-                                    else
-                                    {
-                                        Tools.WriteOutData(Tools.ObfM(mData), newmogg);
-                                    }
-                                }
-                                else
-                                {
-                                    Log("There was a problem extracting the audio file");
-                                    Log("Skipping this song...");
-                                    xPackage.CloseIO();
-                                    continue;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            Log("ERROR: Did not find an audio file in that CON file!");
-                            Log("Skipping this song...");
-                            xPackage.CloseIO();
-                            continue;
-                        }
+                var xMIDI = xPackage.GetFile("songs/" + internal_name + "/" + internal_name + ".mid");
+                if (xMIDI != null)
+                {
+                    var newmidi = songFolder + "notes.mid";
+                    if (xMIDI.ExtractToFile(newmidi))
+                    {
+                        Log("Extracted MIDI file " + internal_name + ".mid successfully");
+                        ProcessMidi(newmidi);
+                    }
+                    else
+                    {
+                        Log("There was a problem extracting the MIDI file");
+                        Log("Skipping this song...");
                         xPackage.CloseIO();
-
-                        if (!Directory.Exists(songfolder))
-                        {
-                            Directory.CreateDirectory(songfolder);
-                        }
-                        Song.WriteINIFile(songfolder, !chkNoC3.Checked);
-                        
-                        var banner = Application.StartupPath + "\\res\\phaseshift\\banner.png";
-                        if (File.Exists(banner) && !chkNoC3.Checked)
-                        {
-                            Tools.DeleteFile(songfolder + "banner.png");
-                            File.Copy(banner, songfolder + "banner.png");
-                        }
-                        var icon = Application.StartupPath + "\\res\\phaseshift\\c3.png";
-                        if (File.Exists(icon) && !chkNoC3.Checked)
-                        {
-                            Tools.DeleteFile(songfolder + "ccc.png");
-                            File.Copy(icon,songfolder + "ccc.png");
-                        }
-
-                        success++;
-                        if (!chkRAR.Checked || backgroundWorker1.CancellationPending) continue;
-                        var archive = Path.GetFileName(file);
-                        archive = archive.Replace(" ", "").Replace("-", "_").Replace("\\", "").Replace("'", "").Replace(",", "").Replace("_rb3con", "");
-                        archive = Tools.CleanString(archive, false);
-                        archive = PSFolder + archive + "_ps.rar";
-                        
-                        var arg = "a -m5 -ep1 -r \"" + archive + "\" \"" + songfolder.Substring(0,songfolder.Length-1) + "\"";
-                        Log("Creating RAR archive");
-
-                        Log(Tools.CreateRAR(rar, archive, arg)? "Created RAR archive successfully" : "RAR archive creation failed");
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("There was an error: " + ex.Message);
-                        Log("Attempting to continue with the next file");
+                        continue;
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    Log("There was a problem accessing that file");
-                    Log("The error says: " + ex.Message);
+                    Log("ERROR: Did not find a MIDI file in that CON file!");
+                    Log("Skipping this song...");
+                    xPackage.CloseIO();
+                    continue;
                 }
+
+                var xMOGG = xPackage.GetFile("songs/" + internal_name + "/" + internal_name + ".mogg");
+                if (xMOGG != null)
+                {
+                    var newmogg = songFolder + internal_name + ".mogg";
+                    if (radioSeparate.Checked)
+                    {
+                        xPackage.CloseIO();
+                        SeparateAudio(file, newmogg, songFolder);
+                    }
+                    else if (radioDownmix.Checked)
+                    {
+                        xPackage.CloseIO();
+                        DownMixAudio(file, songFolder);
+                    }
+                    else
+                    {
+                        var msg = "Extracting audio file " +
+                                  (radioAudacity.Checked ? "to send to Audacity" : "and leaving it as is");
+                        Log(msg);
+                        var mData = xMOGG.Extract();
+                        if (mData != null && mData.Length > 0)
+                        {
+                            Log("Successfully extracted audio file '" + Path.GetFileName(newmogg) + "'");
+                            if (radioAudacity.Checked)
+                            {
+                                Log("Sending audio file to Audacity now");
+                                Tools.DecM(mData, false, false, DecryptMode.ToFile, newmogg);
+                                Log(Tools.SendtoAudacity(newmogg));
+                            }
+                            else
+                            {
+                                Tools.WriteOutData(Tools.ObfM(mData), newmogg);
+                            }
+                        }
+                        else
+                        {
+                            Log("There was a problem extracting the audio file");
+                            Log("Skipping this song...");
+                            xPackage.CloseIO();
+                            continue;
+                        }
+                    }
+                }
+                else
+                {
+                    Log("ERROR: Did not find an audio file in that CON file!");
+                    Log("Skipping this song...");
+                    xPackage.CloseIO();
+                    continue;
+                }
+
+                xPackage.CloseIO();
+
+                ////
+                // write
+                ////
+
+                if (!Directory.Exists(songFolder))
+                {
+                    Directory.CreateDirectory(songFolder);
+                }
+
+                Song.WriteINIFile(songFolder, !chkNoC3.Checked);
+
+                var banner = Application.StartupPath + "\\res\\phaseshift\\banner.png";
+                if (File.Exists(banner) && !chkNoC3.Checked)
+                {
+                    Tools.DeleteFile(songFolder + "banner.png");
+                    File.Copy(banner, songFolder + "banner.png");
+                }
+
+                var icon = Application.StartupPath + "\\res\\phaseshift\\c3.png";
+                if (File.Exists(icon) && !chkNoC3.Checked)
+                {
+                    Tools.DeleteFile(songFolder + "ccc.png");
+                    File.Copy(icon, songFolder + "ccc.png");
+                }
+
+                success++;
+
+                ////
+                // rar
+                ////
+
+                if (!chkRAR.Checked || backgroundWorker1.CancellationPending)
+                    continue;
+
+                var archive = Path.GetFileName(file);
+                archive = archive.Replace(" ", "").Replace("-", "_").Replace("\\", "").Replace("'", "").Replace(",", "")
+                    .Replace("_rb3con", "");
+                archive = Tools.CleanString(archive, false);
+                archive = PSFolder + archive + "_ps.rar";
+
+                Log("Creating RAR archive");
+
+                bool rarSuccess = Tools.CreateRAR(new NemoTools.RAROptions
+                {
+                    Compression = 5,
+                    PathMode = NemoTools.RAROptions.FilePathMode.ExcludeBase,
+                    InputPaths = new[] { songFolder.Substring(0, songFolder.Length - 1) },
+                    OutputPath = archive,
+                    Recurse = true
+                });
+
+                Log(rarSuccess ? "Created RAR archive successfully" : "RAR archive creation failed");
             }
+
             Log("Successfully processed " + success + " of " + counter + " files");
+
             return true;
         }
         

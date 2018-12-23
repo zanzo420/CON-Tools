@@ -797,10 +797,18 @@ namespace C3Tools
                             inst = " \"" + wiifolder + "Instructions.txt\"";
                         }
                                 
-                        var arg = "a -m5 -r -ep1 \"" + archive + "\" \"" + meta + "\" \"" + song + "\"" + inst;
                         Log("Creating RAR archive for " + songname);
+                        
+                        bool rarSuccess = Tools.CreateRAR(new NemoTools.RAROptions
+                        {
+                            Compression = 5,
+                            PathMode = NemoTools.RAROptions.FilePathMode.ExcludeBase,
+                            InputPaths = new[] { meta, song, inst },
+                            OutputPath = archive,
+                            Recurse = true
+                        });
 
-                        Log(Tools.CreateRAR(rar, archive, arg)? "Created RAR archive successfully": "RAR archive creation failed");
+                        Log(rarSuccess ? "Created RAR archive successfully" : "RAR archive creation failed");
                     }
                     catch (Exception ex)
                     {

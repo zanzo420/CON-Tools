@@ -598,11 +598,21 @@ namespace C3Tools
                         archive = archive.Replace(" ", "").Replace("-", "_").Replace("\\","").Replace("'", "").Replace(",", "").Replace("_rb3con","");
                         archive = Tools.CleanString(archive, false);
                         archive = txtFolder.Text + "\\" + archive + "_ps3.rar";
-                        var arg = "a -m5 -r -ep1 \"" + archive + "\" \"" + songfolder + "\"";
+                        
                         Log("Creating RAR archive");
                         //in case of stragglers
                         Tools.DeleteFile(internalfolder + "c.exe");
-                        Log(Tools.CreateRAR(rar, archive, arg) ? "Created RAR archive successfully" : "RAR archive creation failed");
+                        
+                        bool rarSuccess = Tools.CreateRAR(new NemoTools.RAROptions
+                        {
+                            Compression = 5,
+                            PathMode = NemoTools.RAROptions.FilePathMode.ExcludeBase,
+                            InputPaths = new[] { songfolder },
+                            OutputPath = archive,
+                            Recurse = true
+                        });
+
+                        Log(rarSuccess ? "Created RAR archive successfully" : "RAR archive creation failed");
                     }
                     catch (Exception ex)
                     {

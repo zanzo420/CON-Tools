@@ -1952,44 +1952,88 @@ namespace C3Tools
         }
 
         /// <summary>
-        /// Creates RAR archive with highest compression setting
+        /// Represents configuration options for writing a rar file.
         /// </summary>
-        /// <param name="rar_path">Full path to the RAR.exe file</param>
-        /// <param name="archive_name">Name for the RAR archive to be created</param>
-        /// <param name="arguments">Arguments required by RAR.exe</param>
-        /// <returns></returns>
-        public bool CreateRAR(string rar_path, string archive_name, string arguments)
-        {
-            try
+        public class RAROptions {
+            public enum FilePathMode {
+                Default, Exclude, ExcludeBase, ExpandFull, ExpandAll
+            }
+
+            public uint Compression = 3;
+            public FilePathMode PathMode;
+            public bool Recurse;
+            public string OutputPath;
+            public string[] InputPaths;
+
+            public string ToArgumentString()
             {
-                DeleteFile(archive_name);             
+                string args = "";
 
-                var startInfo = new ProcessStartInfo
-                {
-                    CreateNoWindow = true,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    FileName = rar_path,
-                    Arguments = arguments,
-                    WorkingDirectory = Application.StartupPath + "\\bin\\"
-                };
-                var process = Process.Start(startInfo);
-                do
-                {
-                    //wait
-                } while (!process.HasExited);
-                process.Dispose();
+                args += " -" + Compression.ToString();
 
-                if (File.Exists(archive_name))
+                switch (PathMode)
                 {
-                    return true;
+                    case FilePathMode.Exclude:
+                        args += " -ep";
+                        break;
+                    case FilePathMode.ExcludeBase:
+                        args += " -ep1";
+                        break;
+                    case FilePathMode.ExpandFull:
+                        args += " -ep2";
+                        break;
+                    case FilePathMode.ExpandAll:
+                        args += " -ep3";
+                        break;
+                    case FilePathMode.Default:
+                        break;
                 }
+
+                switch (Recurse)
+                {
+                    case true:
+                        args += " -r";
+                        break;
+                    case false:
+                        args += " -r-";
+                        break;
+                }
+                
+                args += "\"" + OutputPath + "\"";
+
+                args += string.Join(" ", InputPaths.Select(p => "\"" + p + "\""));
+                
+                return args;
             }
-            catch (Exception)
+        }
+
+        /// <summary>
+        /// Creates a rar file with the given options.
+        /// </summary>
+        /// <param name="options">Options, including input and output paths.</param>
+        /// <returns>true if the archive was written successfully, false otherwise.</returns>
+        public bool CreateRAR(RAROptions options)
+        {
+            var startInfo = new ProcessStartInfo
             {
-                return false;
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                FileName = Path.Combine(Application.StartupPath, "bin/rar.exe"),
+                Arguments = options.ToArgumentString(),
+                WorkingDirectory = Path.Combine(Application.StartupPath, "bin")
+            };
+
+            var process = Process.Start(startInfo);
+
+            while (!process.HasExited)
+            {
+                // wait
             }
-            return false;
+
+            process.Dispose();
+
+            return File.Exists(options.OutputPath);
         }
         #endregion
 
