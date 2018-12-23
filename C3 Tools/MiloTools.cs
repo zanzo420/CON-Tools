@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using C3Tools.zlib;
+using zlib;
 
 namespace C3Tools
 {
