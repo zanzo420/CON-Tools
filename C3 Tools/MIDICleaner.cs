@@ -1746,7 +1746,7 @@ namespace C3Tools
             try
             {
                 Log("Saving changes to CON file '" + Path.GetFileName(file) + "' ... sit tight");
-                xsignature = new RSAParams(Application.StartupPath + "\\bin\\KV.bin");
+                xsignature = new RSAParams(System.IO.Path.Combine(Application.StartupPath, "bin/KV.bin"));
                 xPackage.RebuildPackage(xsignature);
                 xPackage.FlushPackage(xsignature);
                 xPackage.CloseIO();

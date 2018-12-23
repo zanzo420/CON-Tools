@@ -34,18 +34,19 @@ namespace C3Tools
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            var binFolder = Application.StartupPath + "\\bin\\";
+            var binFolder = Path.Combine(Application.StartupPath, "bin");
             if (!Directory.Exists(binFolder))
             {
                 Directory.CreateDirectory(binFolder);
             }
 
-            if (!File.Exists(Application.StartupPath + "\\bin\\KV.bin"))
+            string path = System.IO.Path.Combine(Application.StartupPath, "bin/KV.bin");
+            if (!File.Exists(path))
             {
                 MessageBox.Show("Required file 'KV.bin' was not found in the \bin subdirectory\n" + APP_NAME + " can't work without it ...", "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Process.GetCurrentProcess().Kill();
             }
-            var kv = new RSAParams(Application.StartupPath + "\\bin\\KV.bin");
+            var kv = new RSAParams(System.IO.Path.Combine(Application.StartupPath, "bin/KV.bin"));
             if (!kv.Valid)
             {
                 MessageBox.Show("Required file 'KV.bin' was found in the \bin subdirectory but it is not valid\n" + APP_NAME + " can't work without it ...", "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Error);

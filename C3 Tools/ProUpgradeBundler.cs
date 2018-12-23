@@ -541,7 +541,7 @@ namespace C3Tools
             try
             {
                 Log("Rebuilding CON file ... this might take a little while");
-                signature = new RSAParams(Application.StartupPath + "\\bin\\KV.bin");
+                signature = new RSAParams(System.IO.Path.Combine(Application.StartupPath, "bin/KV.bin"));
                 if (ChangeGameID.Checked)
                 {
                     xPackage.Header.TitleID = 0x45410914;

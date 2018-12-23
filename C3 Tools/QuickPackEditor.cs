@@ -123,7 +123,7 @@ namespace C3Tools
             {
                 pack = file;
             }
-            var tempfolder = Application.StartupPath + "\\quickpackeditor\\";
+            var tempfolder = Path.Combine(Application.StartupPath, "quickpackeditor");
             if (!Directory.Exists(tempfolder))
             {
                 Directory.CreateDirectory(tempfolder);
@@ -564,7 +564,7 @@ namespace C3Tools
             var newpack = depack ? output_path : pack + "_new";
             try
             {
-                signature = new RSAParams(Application.StartupPath + "\\bin\\KV.bin");
+                signature = new RSAParams(System.IO.Path.Combine(Application.StartupPath, "bin/KV.bin"));
                 var xy = new STFSPackage(repackaged, signature, newpack);
                 xy.CloseIO();
                 
@@ -636,7 +636,7 @@ namespace C3Tools
                 Log("Saving rePACKaged file ... sit tight");
                 Log("THIS STEP MAY TAKE A WHILE. DON'T CLOSE ME DOWN!");
 
-                signature = new RSAParams(Application.StartupPath + "\\bin\\KV.bin");
+                signature = new RSAParams(System.IO.Path.Combine(Application.StartupPath, "bin/KV.bin"));
                 xPackage.RebuildPackage(signature);
                 xPackage.FlushPackage(signature);
                 xPackage.CloseIO();

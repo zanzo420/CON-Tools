@@ -1794,7 +1794,7 @@ namespace C3Tools
             }
             try
             {
-                var kv = new RSAParams(Application.StartupPath + "\\bin\\KV.bin");
+                var kv = new RSAParams(System.IO.Path.Combine(Application.StartupPath, "bin/KV.bin"));
                 if (kv.Valid)
                 {
                     xPackage.FlushPackage(kv);

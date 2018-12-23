@@ -183,7 +183,7 @@ namespace C3Tools
                 Log("Saving changes to pack ... sit tight");
                 Log("THIS STEP MAY TAKE A WHILE. DON'T CLOSE ME DOWN!");
                 
-                signature = new RSAParams(Application.StartupPath + "\\bin\\KV.bin");
+                signature = new RSAParams(System.IO.Path.Combine(Application.StartupPath, "bin/KV.bin"));
                 song.RebuildPackage(signature);
                 song.FlushPackage(signature);
                 song.CloseIO();

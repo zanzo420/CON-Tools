@@ -588,7 +588,7 @@ namespace C3Tools
             try
             {
                 Log("Rebuilding CON file ... this might take a little while");
-                var signature = radioCON.Checked ? new RSAParams(Application.StartupPath + "\\bin\\KV.bin") : new RSAParams(StrongSigned.LIVE);
+                var signature = radioCON.Checked ? new RSAParams(System.IO.Path.Combine(Application.StartupPath, "bin/KV.bin")) : new RSAParams(StrongSigned.LIVE);
                 xPackage.RebuildPackage(signature);
                 xPackage.FlushPackage(signature);
                 xPackage.CloseIO();

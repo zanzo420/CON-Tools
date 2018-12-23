@@ -353,7 +353,7 @@ namespace C3Tools
             xsession.STFSType = STFSType.Type0;
             xsession.HeaderData.MakeAnonymous();
             xsession.HeaderData.ThisType = radioCON.Checked ? PackageType.SavedGame : PackageType.MarketPlace;
-            signature = radioCON.Checked ? new RSAParams(Application.StartupPath + "\\bin\\KV.bin") : new RSAParams(StrongSigned.LIVE);
+            signature = radioCON.Checked ? new RSAParams(System.IO.Path.Combine(Application.StartupPath, "bin/KV.bin")) : new RSAParams(StrongSigned.LIVE);
             var xy = new STFSPackage(xsession, signature, xOut);
             xy.CloseIO();
             //now open and unlock

@@ -566,7 +566,7 @@ namespace C3Tools
 
             try
             {
-                var signature = new RSAParams(Application.StartupPath + "\\bin\\KV.bin");
+                var signature = new RSAParams(System.IO.Path.Combine(Application.StartupPath, "bin/KV.bin"));
                 var bigpack = new STFSPackage(packfiles, signature, xOut);
                 var count1 = bigpack.xFileDirectory.Count;
                 bigpack.CloseIO();

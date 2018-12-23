@@ -392,7 +392,7 @@ namespace C3Tools
 
         private bool PackageCreate(string con, CreateSTFS xsession)
         {
-            var signature = new RSAParams(Application.StartupPath + "\\bin\\KV.bin");
+            var signature = new RSAParams(System.IO.Path.Combine(Application.StartupPath, "bin/KV.bin"));
             try
             {
                 xsession.HeaderData.Title_Display = artistSongTool.Checked ? (SongArtist + " - " + SongTitle) : ("\"" + SongTitle + "\"" + (songByArtistTool.Checked ? " by " + SongArtist : ""));
@@ -799,7 +799,7 @@ namespace C3Tools
                     }
                     xFile.Header.MakeAnonymous();
                     xFile.Header.ThisType = doLIVE ? PackageType.MarketPlace : PackageType.SavedGame;
-                    var signature = doLIVE ? new RSAParams(StrongSigned.LIVE) : new RSAParams(Application.StartupPath + "\\bin\\KV.bin");
+                    var signature = doLIVE ? new RSAParams(StrongSigned.LIVE) : new RSAParams(System.IO.Path.Combine(Application.StartupPath, "bin/KV.bin"));
                     xFile.RebuildPackage(signature);
                     xFile.FlushPackage(signature);
                     xFile.CloseIO();
