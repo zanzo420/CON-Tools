@@ -10,7 +10,6 @@ using System.Linq;
 using System.Windows.Forms;
 using C3Tools.Properties;
 using C3Tools.x360;
-using DevComponents.AdvTree;
 using Color = System.Drawing.Color;
 
 namespace C3Tools
@@ -92,7 +91,7 @@ namespace C3Tools
         {
             node1.Nodes.Clear();
             fileList.Items.Clear();
-            node1.DataKey = xPackage.RootDirectory;
+            node1.Tag = xPackage.RootDirectory;
             var x = xPackage.RootDirectory.GetSubFolders();
             foreach (var y in x)
             {
@@ -101,14 +100,12 @@ namespace C3Tools
             xReturn_NodeClick(node1, null);
         }
 
-        private Node GetNode(ItemEntry x)
+        private TreeNode GetNode(ItemEntry x)
         {
-            var xReturn = new Node { Text = x.Name, DataKey = x };
-            xReturn.NodeClick += xReturn_NodeClick;
-            return xReturn;
+            return new TreeNode { Text = x.Name, Tag = x };
         }
 
-        private void xReturn_NodeClick(object sender, EventArgs e)
+        private void xReturn_NodeClick(object sender, TreeViewEventArgs e)
         {
             if (!xPackage.ParseSuccess)
             {
@@ -116,8 +113,8 @@ namespace C3Tools
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            var xsender = (Node)sender;
-            var x = (FolderEntry)xsender.DataKey;
+            var xsender = folderTree.SelectedNode;
+            var x = (FolderEntry)xsender.Tag;
             var xFiles = x.GetSubFiles();
             var xFolders = x.GetSubFolders();
 
@@ -184,9 +181,8 @@ namespace C3Tools
             Log("Processing");
 
             //populate treeview and listview with package contents
-            node1.NodeClick += xReturn_NodeClick;
+            folderTree.AfterSelect += xReturn_NodeClick;
             SetNodes();
-            node1.SetChecked(true, eTreeAction.Expand);
             Log("Finished processing the contents");
             Log("Ready.");
 
@@ -412,7 +408,7 @@ namespace C3Tools
                 {
                     return;
                 }
-                xPackage.MakeFile(x.FileNameShort, x, ((FolderEntry)folderTree.SelectedNode.DataKey).EntryID, AddType.NoOverWrite);
+                xPackage.MakeFile(x.FileNameShort, x, ((FolderEntry)folderTree.SelectedNode.Tag).EntryID, AddType.NoOverWrite);
                 x.Dispose();
                 xReturn_NodeClick(folderTree.SelectedNode, null);
                 Log("Added file " + x.FileNameShort + " successfully");

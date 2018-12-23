@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CONCreator));
-            this.groupPanel1 = new DevComponents.DotNetBar.Controls.GroupPanel();
-            this.tabControl1 = new DevComponents.DotNetBar.TabControl();
-            this.tabControlPanel1 = new DevComponents.DotNetBar.TabControlPanel();
+            this.groupPanel1 = new System.Windows.Forms.GroupBox();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabControlPanel1 = new System.Windows.Forms.TabPage();
             this.picPin = new System.Windows.Forms.PictureBox();
             this.picWorking = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -47,24 +47,20 @@
             this.cboGameID = new System.Windows.Forms.ComboBox();
             this.picPackage = new System.Windows.Forms.PictureBox();
             this.picContent = new System.Windows.Forms.PictureBox();
-            this.tabItem1 = new DevComponents.DotNetBar.TabItem(this.components);
-            this.folderTree = new DevComponents.AdvTree.AdvTree();
-            this.node1 = new DevComponents.AdvTree.Node();
+            this.folderTree = new System.Windows.Forms.TreeView();
+            this.node1 = new System.Windows.Forms.TreeNode();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.nodeConnector1 = new DevComponents.AdvTree.NodeConnector();
-            this.elementStyle1 = new DevComponents.DotNetBar.ElementStyle();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip3 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addFolderToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabControl2 = new DevComponents.DotNetBar.TabControl();
-            this.tabControlPanel6 = new DevComponents.DotNetBar.TabControlPanel();
+            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.tabControlPanel6 = new System.Windows.Forms.TabPage();
             this.fileList = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.tabItem6 = new DevComponents.DotNetBar.TabItem(this.components);
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.groupPanel1.SuspendLayout();
@@ -87,8 +83,6 @@
             // 
             // groupPanel1
             // 
-            this.groupPanel1.CanvasColor = System.Drawing.SystemColors.Control;
-            this.groupPanel1.ColorSchemeStyle = DevComponents.DotNetBar.eDotNetBarStyle.Office2007;
             this.groupPanel1.Controls.Add(this.tabControl1);
             this.groupPanel1.Location = new System.Drawing.Point(3, 314);
             this.groupPanel1.Name = "groupPanel1";
@@ -96,39 +90,17 @@
             // 
             // 
             // 
-            this.groupPanel1.Style.BackColor2SchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBackground2;
-            this.groupPanel1.Style.BackColorGradientAngle = 90;
-            this.groupPanel1.Style.BackColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBackground;
-            this.groupPanel1.Style.BorderBottom = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.groupPanel1.Style.BorderBottomWidth = 1;
-            this.groupPanel1.Style.BorderColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelBorder;
-            this.groupPanel1.Style.BorderLeft = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.groupPanel1.Style.BorderLeftWidth = 1;
-            this.groupPanel1.Style.BorderRight = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.groupPanel1.Style.BorderRightWidth = 1;
-            this.groupPanel1.Style.BorderTop = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.groupPanel1.Style.BorderTopWidth = 1;
-            this.groupPanel1.Style.CornerDiameter = 4;
-            this.groupPanel1.Style.CornerType = DevComponents.DotNetBar.eCornerType.Rounded;
-            this.groupPanel1.Style.TextAlignment = DevComponents.DotNetBar.eStyleTextAlignment.Center;
-            this.groupPanel1.Style.TextColorSchemePart = DevComponents.DotNetBar.eColorSchemePart.PanelText;
-            this.groupPanel1.Style.TextLineAlignment = DevComponents.DotNetBar.eStyleTextAlignment.Near;
             this.groupPanel1.TabIndex = 5;
             // 
             // tabControl1
             // 
             this.tabControl1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(194)))), ((int)(((byte)(217)))), ((int)(((byte)(247)))));
-            this.tabControl1.CanReorderTabs = false;
             this.tabControl1.Controls.Add(this.tabControlPanel1);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedTabFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.tabControl1.SelectedTabIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(500, 188);
             this.tabControl1.TabIndex = 11;
-            this.tabControl1.TabLayoutType = DevComponents.DotNetBar.eTabLayoutType.FixedWithNavigationBox;
-            this.tabControl1.Tabs.Add(this.tabItem1);
             this.tabControl1.Text = "Media";
             // 
             // tabControlPanel1
@@ -151,15 +123,7 @@
             this.tabControlPanel1.Name = "tabControlPanel1";
             this.tabControlPanel1.Padding = new System.Windows.Forms.Padding(1);
             this.tabControlPanel1.Size = new System.Drawing.Size(500, 162);
-            this.tabControlPanel1.Style.BackColor1.Color = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(179)))), ((int)(((byte)(231)))));
-            this.tabControlPanel1.Style.BackColor2.Color = System.Drawing.Color.FromArgb(((int)(((byte)(223)))), ((int)(((byte)(237)))), ((int)(((byte)(254)))));
-            this.tabControlPanel1.Style.Border = DevComponents.DotNetBar.eBorderType.SingleLine;
-            this.tabControlPanel1.Style.BorderColor.Color = System.Drawing.Color.FromArgb(((int)(((byte)(59)))), ((int)(((byte)(97)))), ((int)(((byte)(156)))));
-            this.tabControlPanel1.Style.BorderSide = ((DevComponents.DotNetBar.eBorderSide)(((DevComponents.DotNetBar.eBorderSide.Left | DevComponents.DotNetBar.eBorderSide.Right) 
-            | DevComponents.DotNetBar.eBorderSide.Bottom)));
-            this.tabControlPanel1.Style.GradientAngle = 90;
             this.tabControlPanel1.TabIndex = 1;
-            this.tabControlPanel1.TabItem = this.tabItem1;
             // 
             // picPin
             // 
@@ -347,12 +311,7 @@
             this.picContent.DragDrop += new System.Windows.Forms.DragEventHandler(this.pictureBox1_DragDrop);
             this.picContent.DragEnter += new System.Windows.Forms.DragEventHandler(this.HandleDragEnter);
             this.picContent.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseClick);
-            // 
-            // tabItem1
-            // 
-            this.tabItem1.AttachedControl = this.tabControlPanel1;
-            this.tabItem1.Name = "tabItem1";
-            this.tabItem1.Text = "";
+
             // 
             // folderTree
             // 
@@ -362,19 +321,11 @@
             // 
             // 
             // 
-            this.folderTree.BackgroundStyle.BackgroundImage = global::C3Tools.Properties.Resources.dragdropfolder2;
-            this.folderTree.BackgroundStyle.BackgroundImagePosition = DevComponents.DotNetBar.eStyleBackgroundImage.Center;
-            this.folderTree.BackgroundStyle.Class = "TreeBorderKey";
-            this.folderTree.DragDropEnabled = false;
             this.folderTree.Location = new System.Drawing.Point(10, 4);
             this.folderTree.Name = "folderTree";
-            this.folderTree.Nodes.AddRange(new DevComponents.AdvTree.Node[] {
-            this.node1});
-            this.folderTree.NodesConnector = this.nodeConnector1;
-            this.folderTree.NodeStyle = this.elementStyle1;
+            this.folderTree.Nodes.Add(this.node1);
             this.folderTree.PathSeparator = ";";
             this.folderTree.Size = new System.Drawing.Size(216, 268);
-            this.folderTree.Styles.Add(this.elementStyle1);
             this.folderTree.TabIndex = 6;
             this.folderTree.Text = "advTree1";
             this.folderTree.DragDrop += new System.Windows.Forms.DragEventHandler(this.advTree1_DragDrop);
@@ -382,8 +333,7 @@
             // 
             // node1
             // 
-            this.node1.ContextMenu = this.contextMenuStrip2;
-            this.node1.Expanded = true;
+            this.node1.ContextMenuStrip = this.contextMenuStrip2;
             this.node1.Name = "node1";
             this.node1.Text = "Root";
             // 
@@ -402,15 +352,6 @@
             this.addFolderToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.addFolderToolStripMenuItem.Text = "Add Folder";
             this.addFolderToolStripMenuItem.Click += new System.EventHandler(this.addFolderToolStripMenuItem_Click);
-            // 
-            // nodeConnector1
-            // 
-            this.nodeConnector1.LineColor = System.Drawing.SystemColors.ControlText;
-            // 
-            // elementStyle1
-            // 
-            this.elementStyle1.Name = "elementStyle1";
-            this.elementStyle1.TextColor = System.Drawing.SystemColors.ControlText;
             // 
             // contextMenuStrip1
             // 
@@ -464,17 +405,12 @@
             // tabControl2
             // 
             this.tabControl2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(194)))), ((int)(((byte)(217)))), ((int)(((byte)(247)))));
-            this.tabControl2.CanReorderTabs = true;
             this.tabControl2.Controls.Add(this.tabControlPanel6);
             this.tabControl2.Dock = System.Windows.Forms.DockStyle.Top;
             this.tabControl2.Location = new System.Drawing.Point(0, 0);
             this.tabControl2.Name = "tabControl2";
-            this.tabControl2.SelectedTabFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.tabControl2.SelectedTabIndex = 0;
             this.tabControl2.Size = new System.Drawing.Size(511, 302);
             this.tabControl2.TabIndex = 8;
-            this.tabControl2.TabLayoutType = DevComponents.DotNetBar.eTabLayoutType.FixedWithNavigationBox;
-            this.tabControl2.Tabs.Add(this.tabItem6);
             this.tabControl2.Text = "tabControl2";
             // 
             // tabControlPanel6
@@ -486,15 +422,7 @@
             this.tabControlPanel6.Name = "tabControlPanel6";
             this.tabControlPanel6.Padding = new System.Windows.Forms.Padding(1);
             this.tabControlPanel6.Size = new System.Drawing.Size(511, 276);
-            this.tabControlPanel6.Style.BackColor1.Color = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(179)))), ((int)(((byte)(231)))));
-            this.tabControlPanel6.Style.BackColor2.Color = System.Drawing.Color.FromArgb(((int)(((byte)(223)))), ((int)(((byte)(237)))), ((int)(((byte)(254)))));
-            this.tabControlPanel6.Style.Border = DevComponents.DotNetBar.eBorderType.SingleLine;
-            this.tabControlPanel6.Style.BorderColor.Color = System.Drawing.Color.FromArgb(((int)(((byte)(59)))), ((int)(((byte)(97)))), ((int)(((byte)(156)))));
-            this.tabControlPanel6.Style.BorderSide = ((DevComponents.DotNetBar.eBorderSide)(((DevComponents.DotNetBar.eBorderSide.Left | DevComponents.DotNetBar.eBorderSide.Right) 
-            | DevComponents.DotNetBar.eBorderSide.Bottom)));
-            this.tabControlPanel6.Style.GradientAngle = 90;
             this.tabControlPanel6.TabIndex = 7;
-            this.tabControlPanel6.TabItem = this.tabItem6;
             // 
             // fileList
             // 
@@ -516,12 +444,6 @@
             // 
             this.columnHeader1.Text = "File";
             this.columnHeader1.Width = 262;
-            // 
-            // tabItem6
-            // 
-            this.tabItem6.AttachedControl = this.tabControlPanel6;
-            this.tabItem6.Name = "tabItem6";
-            this.tabItem6.Text = "";
             // 
             // backgroundWorker1
             // 
@@ -568,16 +490,13 @@
 
         #endregion
 
-        private DevComponents.DotNetBar.Controls.GroupPanel groupPanel1;
-        private DevComponents.AdvTree.AdvTree folderTree;
-        private DevComponents.AdvTree.Node node1;
-        private DevComponents.AdvTree.NodeConnector nodeConnector1;
-        private DevComponents.DotNetBar.ElementStyle elementStyle1;
+        private System.Windows.Forms.GroupBox groupPanel1;
+        private System.Windows.Forms.TreeView folderTree;
+        private System.Windows.Forms.TreeNode node1;
         private System.Windows.Forms.ListView fileList;
         private System.Windows.Forms.ColumnHeader columnHeader1;
-        private DevComponents.DotNetBar.TabControl tabControl1;
-        private DevComponents.DotNetBar.TabControlPanel tabControlPanel1;
-        private DevComponents.DotNetBar.TabItem tabItem1;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabControlPanel1;
         private System.Windows.Forms.PictureBox picPackage;
         private System.Windows.Forms.PictureBox picContent;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
@@ -588,9 +507,8 @@
         private System.Windows.Forms.ToolStripMenuItem addFolderToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem deleteFolderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
-        private DevComponents.DotNetBar.TabControl tabControl2;
-        private DevComponents.DotNetBar.TabControlPanel tabControlPanel6;
-        private DevComponents.DotNetBar.TabItem tabItem6;
+        private System.Windows.Forms.TabControl tabControl2;
+        private System.Windows.Forms.TabPage tabControlPanel6;
         private System.Windows.Forms.Button btnCreate;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.RadioButton radioLIVE;

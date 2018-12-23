@@ -1215,7 +1215,6 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "C3 CON Tools";
-            this.TitleText = "C3 CON Tools";
             this.toolTip1.SetToolTip(this, "Drag-and-drop a song file here or click on one of the buttons");
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Shown += new System.EventHandler(this.MainForm_Shown);

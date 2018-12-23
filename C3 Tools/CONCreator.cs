@@ -8,13 +8,11 @@ using System.Linq;
 using System.Windows.Forms;
 using C3Tools.Properties;
 using C3Tools.x360;
-using DevComponents.AdvTree;
-using DevComponents.DotNetBar;
 using System.Drawing;
 
 namespace C3Tools
 {
-    public partial class CONCreator : Office2007Form
+    public partial class CONCreator : Form
     {
         private static string sFolder;
         private readonly CreateSTFS xsession;
@@ -47,9 +45,9 @@ namespace C3Tools
             xsession = new CreateSTFS();
             var x = (PackageType[])Enum.GetValues(typeof(PackageType));
             y.AddRange(x);
-            node1.DataKey = (ushort)0xFFFF;
-            node1.NodeClick += xReturn_NodeClick;
-            folderTree.SelectedIndex = 0;    
+            node1.Tag = (ushort) 0xFFFF;
+            folderTree.AfterSelect += xReturn_NodeClick;
+            folderTree.SelectedNode = node1;
             
             cboGameID.SelectedIndex = 2;
             toolTip1.SetToolTip(picContent, "Click here to select the Content Image (visible in here)");
@@ -68,7 +66,7 @@ namespace C3Tools
         private void AddFolder(string folder)
         {
             string xPath;
-            if (folderTree.SelectedNode != folderTree.Nodes[0])
+            if (folderTree.SelectedNode != folderTree.TopNode)
             {
                 xPath = ((CFolderEntry)folderTree.SelectedNode.Tag).Path + "/" + folder;
             }
@@ -94,7 +92,7 @@ namespace C3Tools
             }
             folderTree.SelectedNode.Nodes.Add(GetFoldNode(xsession.GetFolder(xPath)));
             folderTree.SelectedNode.ExpandAll();
-            folderTree.SelectedNode = folderTree.FindNodeByText(folder);
+            folderTree.SelectedNode = folderTree.Nodes.Cast<TreeNode>().First(e => e.Text == folder);
         }
         
         private void addFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -120,7 +118,7 @@ namespace C3Tools
             }
             
             string xPath;
-            if (folderTree.SelectedNode != folderTree.Nodes[0])
+            if (folderTree.SelectedNode != folderTree.TopNode)
             {
                 xPath = ((CFolderEntry) folderTree.SelectedNode.Tag).Path + "/" + Path.GetFileName(file);
             }
@@ -167,19 +165,17 @@ namespace C3Tools
             folderTree.Enabled = fileList.Enabled = true;
         }
 
-        private Node GetFoldNode(CItemEntry x)
+        private TreeNode GetFoldNode(CItemEntry x)
         {
-            var xReturn = new Node {Text = x.Name, Tag = x, ContextMenu = contextMenuStrip3};
-            xReturn.NodeClick += xReturn_NodeClick;
-            return xReturn;
+            return new TreeNode {Text = x.Name, Tag = x, ContextMenuStrip = contextMenuStrip3};
         }
 
-        private void xReturn_NodeClick(object sender, EventArgs e)
+        private void xReturn_NodeClick(object sender, TreeViewEventArgs e)
         {
-            var x = (Node) sender;
-            if (folderTree.Nodes[0] != x)
+            var node = folderTree.SelectedNode;
+            if (node != folderTree.TopNode)
             {
-                GetSelFiles((CFolderEntry) x.Tag);
+                GetSelFiles((CFolderEntry) node.Tag);
             }
             else
             {
@@ -190,7 +186,7 @@ namespace C3Tools
         private void addFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var sUsed = new StringCollection();
-            foreach (Node node in folderTree.SelectedNode.Nodes)
+            foreach (TreeNode node in folderTree.SelectedNode.Nodes)
             {
                 sUsed.Add(node.Text);
             }
@@ -209,7 +205,7 @@ namespace C3Tools
                 }
             }
             AddFolder(newName);
-            GetSelFiles((CFolderEntry)(folderTree.FindNodeByText(Path.GetFileName(newName))).Tag);
+            GetSelFiles((CFolderEntry)(folderTree.Nodes.Cast<TreeNode>().First(n => n.Text == Path.GetFileName(newName))).Tag);
         }
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
@@ -231,7 +227,6 @@ namespace C3Tools
                 MessageBox.Show("didn't work");
             }
             folderTree.SelectedNode.Remove();
-            folderTree.SelectedIndex = 0;
 
             GetSelFiles(x);
         }
@@ -464,8 +459,8 @@ namespace C3Tools
             {
                 GetFiles(subfile);
             }
-            folderTree.SelectedNode = folderTree.FindNodeByText(Path.GetFileName(folder[0]));
-            GetSelFiles((CFolderEntry)(folderTree.FindNodeByText(Path.GetFileName(folder[0]))).Tag);
+            folderTree.SelectedNode = folderTree.Nodes.Cast<TreeNode>().First(n => n.Text == Path.GetFileName(folder[0]));
+            GetSelFiles((CFolderEntry)(folderTree.Nodes.Cast<TreeNode>().First(n => n.Text == Path.GetFileName(folder[0]))).Tag);
         }
 
         private void txtDisplay_KeyDown(object sender, KeyEventArgs e)

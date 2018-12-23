@@ -9,7 +9,6 @@ using System.Security.Principal;
 using System.Windows.Forms;
 using C3Tools.Properties;
 using C3Tools.x360;
-using DevComponents.DotNetBar;
 using System.Drawing;
 using Cursors = System.Windows.Forms.Cursors;
 using KeyEventArgs = System.Windows.Forms.KeyEventArgs;
@@ -19,7 +18,7 @@ using Point = System.Drawing.Point;
 
 namespace C3Tools
 {
-    public partial class MainForm : Office2007Form
+    public partial class MainForm : Form
     {
         public List<string> Files = new List<string>();
         public Form activeForm;

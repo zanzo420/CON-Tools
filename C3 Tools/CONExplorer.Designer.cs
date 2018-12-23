@@ -51,22 +51,15 @@
             this.chkAutoExtract = new System.Windows.Forms.CheckBox();
             this.radioLIVE = new System.Windows.Forms.RadioButton();
             this.radioCON = new System.Windows.Forms.RadioButton();
-            this.txtDescription = new DevComponents.DotNetBar.Controls.TextBoxX();
-            this.txtTitle = new DevComponents.DotNetBar.Controls.TextBoxX();
+            this.txtDescription = new System.Windows.Forms.TextBox();
+            this.txtTitle = new System.Windows.Forms.TextBox();
             this.picPackage = new System.Windows.Forms.PictureBox();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.extractImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.picContent = new System.Windows.Forms.PictureBox();
             this.tabContents = new System.Windows.Forms.TabPage();
-            this.folderTree = new DevComponents.AdvTree.AdvTree();
-            this.node1 = new DevComponents.AdvTree.Node();
-            this.nodeConnector1 = new DevComponents.AdvTree.NodeConnector();
-            this.elementStyle1 = new DevComponents.DotNetBar.ElementStyle();
-            this.elementStyle2 = new DevComponents.DotNetBar.ElementStyle();
-            this.elementStyle3 = new DevComponents.DotNetBar.ElementStyle();
-            this.elementStyle4 = new DevComponents.DotNetBar.ElementStyle();
-            this.elementStyle5 = new DevComponents.DotNetBar.ElementStyle();
-            this.elementStyle6 = new DevComponents.DotNetBar.ElementStyle();
+            this.folderTree = new System.Windows.Forms.TreeView();
+            this.node1 = new System.Windows.Forms.TreeNode();
             this.fileList = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -378,7 +371,6 @@
             // 
             // 
             // 
-            this.txtDescription.Border.Class = "TextBoxBorder";
             this.txtDescription.Location = new System.Drawing.Point(17, 170);
             this.txtDescription.MaxLength = 80;
             this.txtDescription.Multiline = true;
@@ -395,7 +387,6 @@
             // 
             // 
             // 
-            this.txtTitle.Border.Class = "TextBoxBorder";
             this.txtTitle.Location = new System.Drawing.Point(17, 81);
             this.txtTitle.MaxLength = 80;
             this.txtTitle.Multiline = true;
@@ -471,160 +462,23 @@
             // 
             this.folderTree.AccessibleRole = System.Windows.Forms.AccessibleRole.Outline;
             this.folderTree.AllowDrop = true;
-            this.folderTree.AllowUserToResizeColumns = false;
             this.folderTree.BackColor = System.Drawing.Color.White;
             // 
             // 
             // 
-            this.folderTree.BackgroundStyle.Class = "TreeBorderKey";
-            this.folderTree.DragDropEnabled = false;
             this.folderTree.Location = new System.Drawing.Point(6, 6);
             this.folderTree.Name = "folderTree";
-            this.folderTree.Nodes.AddRange(new DevComponents.AdvTree.Node[] {
-            this.node1});
-            this.folderTree.NodesConnector = this.nodeConnector1;
-            this.folderTree.NodeStyle = this.elementStyle1;
+            this.folderTree.Nodes.Add(this.node1);
             this.folderTree.PathSeparator = ";";
             this.folderTree.Size = new System.Drawing.Size(386, 162);
-            this.folderTree.Styles.Add(this.elementStyle1);
-            this.folderTree.Styles.Add(this.elementStyle2);
-            this.folderTree.Styles.Add(this.elementStyle3);
-            this.folderTree.Styles.Add(this.elementStyle4);
-            this.folderTree.Styles.Add(this.elementStyle5);
-            this.folderTree.Styles.Add(this.elementStyle6);
             this.folderTree.TabIndex = 47;
             this.folderTree.Text = "advTree1";
             this.folderTree.Click += new System.EventHandler(this.advTree1_Click);
             // 
             // node1
             // 
-            this.node1.Expanded = true;
             this.node1.Name = "node1";
             this.node1.Text = "Root";
-            // 
-            // nodeConnector1
-            // 
-            this.nodeConnector1.LineColor = System.Drawing.SystemColors.ControlText;
-            // 
-            // elementStyle1
-            // 
-            this.elementStyle1.Name = "elementStyle1";
-            this.elementStyle1.TextColor = System.Drawing.SystemColors.ControlText;
-            // 
-            // elementStyle2
-            // 
-            this.elementStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(221)))), ((int)(((byte)(230)))), ((int)(((byte)(247)))));
-            this.elementStyle2.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(168)))), ((int)(((byte)(228)))));
-            this.elementStyle2.BackColorGradientAngle = 90;
-            this.elementStyle2.BorderBottom = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle2.BorderBottomWidth = 1;
-            this.elementStyle2.BorderColor = System.Drawing.Color.DarkGray;
-            this.elementStyle2.BorderLeft = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle2.BorderLeftWidth = 1;
-            this.elementStyle2.BorderRight = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle2.BorderRightWidth = 1;
-            this.elementStyle2.BorderTop = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle2.BorderTopWidth = 1;
-            this.elementStyle2.CornerDiameter = 4;
-            this.elementStyle2.Description = "Blue";
-            this.elementStyle2.Name = "elementStyle2";
-            this.elementStyle2.PaddingBottom = 1;
-            this.elementStyle2.PaddingLeft = 1;
-            this.elementStyle2.PaddingRight = 1;
-            this.elementStyle2.PaddingTop = 1;
-            this.elementStyle2.TextColor = System.Drawing.Color.Black;
-            // 
-            // elementStyle3
-            // 
-            this.elementStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.elementStyle3.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(224)))), ((int)(((byte)(252)))));
-            this.elementStyle3.BackColorGradientAngle = 90;
-            this.elementStyle3.BorderBottom = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle3.BorderBottomWidth = 1;
-            this.elementStyle3.BorderColor = System.Drawing.Color.DarkGray;
-            this.elementStyle3.BorderLeft = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle3.BorderLeftWidth = 1;
-            this.elementStyle3.BorderRight = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle3.BorderRightWidth = 1;
-            this.elementStyle3.BorderTop = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle3.BorderTopWidth = 1;
-            this.elementStyle3.CornerDiameter = 4;
-            this.elementStyle3.Description = "BlueLight";
-            this.elementStyle3.Name = "elementStyle3";
-            this.elementStyle3.PaddingBottom = 1;
-            this.elementStyle3.PaddingLeft = 1;
-            this.elementStyle3.PaddingRight = 1;
-            this.elementStyle3.PaddingTop = 1;
-            this.elementStyle3.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(84)))), ((int)(((byte)(115)))));
-            // 
-            // elementStyle4
-            // 
-            this.elementStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.elementStyle4.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(224)))), ((int)(((byte)(252)))));
-            this.elementStyle4.BackColorGradientAngle = 90;
-            this.elementStyle4.BorderBottom = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle4.BorderBottomWidth = 1;
-            this.elementStyle4.BorderColor = System.Drawing.Color.DarkGray;
-            this.elementStyle4.BorderLeft = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle4.BorderLeftWidth = 1;
-            this.elementStyle4.BorderRight = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle4.BorderRightWidth = 1;
-            this.elementStyle4.BorderTop = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle4.BorderTopWidth = 1;
-            this.elementStyle4.CornerDiameter = 4;
-            this.elementStyle4.Description = "BlueLight";
-            this.elementStyle4.Name = "elementStyle4";
-            this.elementStyle4.PaddingBottom = 1;
-            this.elementStyle4.PaddingLeft = 1;
-            this.elementStyle4.PaddingRight = 1;
-            this.elementStyle4.PaddingTop = 1;
-            this.elementStyle4.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(84)))), ((int)(((byte)(115)))));
-            // 
-            // elementStyle5
-            // 
-            this.elementStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.elementStyle5.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(224)))), ((int)(((byte)(252)))));
-            this.elementStyle5.BackColorGradientAngle = 90;
-            this.elementStyle5.BorderBottom = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle5.BorderBottomWidth = 1;
-            this.elementStyle5.BorderColor = System.Drawing.Color.DarkGray;
-            this.elementStyle5.BorderLeft = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle5.BorderLeftWidth = 1;
-            this.elementStyle5.BorderRight = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle5.BorderRightWidth = 1;
-            this.elementStyle5.BorderTop = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle5.BorderTopWidth = 1;
-            this.elementStyle5.CornerDiameter = 4;
-            this.elementStyle5.Description = "BlueLight";
-            this.elementStyle5.Name = "elementStyle5";
-            this.elementStyle5.PaddingBottom = 1;
-            this.elementStyle5.PaddingLeft = 1;
-            this.elementStyle5.PaddingRight = 1;
-            this.elementStyle5.PaddingTop = 1;
-            this.elementStyle5.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(84)))), ((int)(((byte)(115)))));
-            // 
-            // elementStyle6
-            // 
-            this.elementStyle6.BackColor = System.Drawing.Color.White;
-            this.elementStyle6.BackColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(228)))), ((int)(((byte)(240)))));
-            this.elementStyle6.BackColorGradientAngle = 90;
-            this.elementStyle6.BorderBottom = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle6.BorderBottomWidth = 1;
-            this.elementStyle6.BorderColor = System.Drawing.Color.DarkGray;
-            this.elementStyle6.BorderLeft = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle6.BorderLeftWidth = 1;
-            this.elementStyle6.BorderRight = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle6.BorderRightWidth = 1;
-            this.elementStyle6.BorderTop = DevComponents.DotNetBar.eStyleBorderType.Solid;
-            this.elementStyle6.BorderTopWidth = 1;
-            this.elementStyle6.CornerDiameter = 4;
-            this.elementStyle6.Description = "Gray";
-            this.elementStyle6.Name = "elementStyle6";
-            this.elementStyle6.PaddingBottom = 1;
-            this.elementStyle6.PaddingLeft = 1;
-            this.elementStyle6.PaddingRight = 1;
-            this.elementStyle6.PaddingTop = 1;
-            this.elementStyle6.TextColor = System.Drawing.Color.Black;
             // 
             // fileList
             // 
@@ -838,19 +692,12 @@
         private System.Windows.Forms.CheckBox chkAutoExtract;
         private System.Windows.Forms.RadioButton radioLIVE;
         private System.Windows.Forms.RadioButton radioCON;
-        private DevComponents.DotNetBar.Controls.TextBoxX txtDescription;
-        private DevComponents.DotNetBar.Controls.TextBoxX txtTitle;
+        private System.Windows.Forms.TextBox txtDescription;
+        private System.Windows.Forms.TextBox txtTitle;
         private System.Windows.Forms.PictureBox picPackage;
         private System.Windows.Forms.PictureBox picContent;
-        private DevComponents.AdvTree.AdvTree folderTree;
-        private DevComponents.AdvTree.Node node1;
-        private DevComponents.AdvTree.NodeConnector nodeConnector1;
-        private DevComponents.DotNetBar.ElementStyle elementStyle1;
-        private DevComponents.DotNetBar.ElementStyle elementStyle2;
-        private DevComponents.DotNetBar.ElementStyle elementStyle3;
-        private DevComponents.DotNetBar.ElementStyle elementStyle4;
-        private DevComponents.DotNetBar.ElementStyle elementStyle5;
-        private DevComponents.DotNetBar.ElementStyle elementStyle6;
+        private System.Windows.Forms.TreeView folderTree;
+        private System.Windows.Forms.TreeNode node1;
         public System.Windows.Forms.ListView fileList;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
