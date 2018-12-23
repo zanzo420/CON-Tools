@@ -9,6 +9,7 @@ using C3Tools.x360;
 using Un4seen.Bass;
 using SearchOption = System.IO.SearchOption;
 using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace C3Tools
 {
@@ -34,7 +35,7 @@ namespace C3Tools
             Parser = new DTAParser();
 
             inputFiles = new List<string>();
-            inputDir = Application.StartupPath + "\\phaseshift\\";
+            inputDir = Path.Combine(Application.StartupPath, "phaseshift/");
             if (!Directory.Exists(inputDir))
             {
                 Directory.CreateDirectory(inputDir);
@@ -48,7 +49,7 @@ namespace C3Tools
                 button.FlatAppearance.MouseOverBackColor = button.BackColor == Color.Transparent ? Color.FromArgb(127, Color.AliceBlue.R, Color.AliceBlue.G, Color.AliceBlue.B) : Tools.LightenColor(button.BackColor);
             }
 
-            rar = Application.StartupPath + "\\bin\\rar.exe";
+            rar = Path.Combine(Application.StartupPath, "bin/rar.exe");
             if (!File.Exists(rar))
             {
                 MessageBox.Show("Can't find rar.exe ... I won't be able to create RAR files for your songs without it",
@@ -283,14 +284,15 @@ namespace C3Tools
                     return false;
                 }
 
-                var songFolder = PSFolder + Tools.CleanString(Song.Artist, false) + " - " +
-                                 Tools.CleanString(Song.Name, false) + "\\";
+                string artistNameFolder = Tools.CleanString(Song.Artist, false) + " - " +
+                                          Tools.CleanString(Song.Name, false);
+                var songFolder = Path.Combine(PSFolder, artistNameFolder);
                 if (!Directory.Exists(songFolder))
                 {
                     Directory.CreateDirectory(songFolder);
                 }
 
-                var internal_name = Parser.Songs[0].InternalName;
+                var internalName = Parser.Songs[0].InternalName;
 
                 var xPackage = new STFSPackage(file);
                 if (!xPackage.ParseSuccess)
@@ -300,13 +302,13 @@ namespace C3Tools
                     continue;
                 }
 
-                var xArt = xPackage.GetFile("songs/" + internal_name + "/gen/" + internal_name + "_keep.png_xbox");
+                var xArt = xPackage.GetFile("songs/" + internalName + "/gen/" + internalName + "_keep.png_xbox");
                 if (xArt != null)
                 {
-                    var newart = songFolder + "album.png_xbox";
+                    var newart = Path.Combine(songFolder, "album.png_xbox");
                     if (xArt.ExtractToFile(newart))
                     {
-                        Log("Extracted album art file " + internal_name + "_keep.png_xbox successfully");
+                        Log("Extracted album art file " + internalName + "_keep.png_xbox successfully");
                         fromXbox(newart);
                     }
                     else
@@ -319,13 +321,13 @@ namespace C3Tools
                     Log("WARNING: Did not find album art file in that CON file");
                 }
 
-                var xMIDI = xPackage.GetFile("songs/" + internal_name + "/" + internal_name + ".mid");
+                var xMIDI = xPackage.GetFile("songs/" + internalName + "/" + internalName + ".mid");
                 if (xMIDI != null)
                 {
-                    var newmidi = songFolder + "notes.mid";
+                    var newmidi = Path.Combine(songFolder, "notes.mid");
                     if (xMIDI.ExtractToFile(newmidi))
                     {
-                        Log("Extracted MIDI file " + internal_name + ".mid successfully");
+                        Log("Extracted MIDI file " + internalName + ".mid successfully");
                         ProcessMidi(newmidi);
                     }
                     else
@@ -344,10 +346,10 @@ namespace C3Tools
                     continue;
                 }
 
-                var xMOGG = xPackage.GetFile("songs/" + internal_name + "/" + internal_name + ".mogg");
+                var xMOGG = xPackage.GetFile("songs/" + internalName + "/" + internalName + ".mogg");
                 if (xMOGG != null)
                 {
-                    var newmogg = songFolder + internal_name + ".mogg";
+                    var newmogg = Path.Combine(songFolder, internalName + ".mogg");
                     if (radioSeparate.Checked)
                     {
                         xPackage.CloseIO();
@@ -408,18 +410,18 @@ namespace C3Tools
 
                 Song.WriteINIFile(songFolder, !chkNoC3.Checked);
 
-                var banner = Application.StartupPath + "\\res\\phaseshift\\banner.png";
+                var banner = Path.Combine(Application.StartupPath, "res/phaseshift/banner.png");
                 if (File.Exists(banner) && !chkNoC3.Checked)
                 {
-                    Tools.DeleteFile(songFolder + "banner.png");
-                    File.Copy(banner, songFolder + "banner.png");
+                    Tools.DeleteFile(Path.Combine(songFolder, "banner.png"));
+                    File.Copy(banner, Path.Combine(songFolder, "banner.png"));
                 }
 
-                var icon = Application.StartupPath + "\\res\\phaseshift\\c3.png";
+                var icon = Path.Combine(Application.StartupPath, "res/phaseshift/c3.png");
                 if (File.Exists(icon) && !chkNoC3.Checked)
                 {
-                    Tools.DeleteFile(songFolder + "ccc.png");
-                    File.Copy(icon, songFolder + "ccc.png");
+                    Tools.DeleteFile(Path.Combine(songFolder, "ccc.png"));
+                    File.Copy(icon, Path.Combine(songFolder, "ccc.png"));
                 }
 
                 success++;
@@ -432,7 +434,12 @@ namespace C3Tools
                     continue;
 
                 var archive = Path.GetFileName(file);
-                archive = archive.Replace(" ", "").Replace("-", "_").Replace("\\", "").Replace("'", "").Replace(",", "")
+                archive = archive
+                    .Replace(" ", "")
+                    .Replace("-", "_")
+                    .Replace("\\", "")
+                    .Replace("'", "")
+                    .Replace(",", "")
                     .Replace("_rb3con", "");
                 archive = Tools.CleanString(archive, false);
                 archive = PSFolder + archive + "_ps.rar";
@@ -556,10 +563,11 @@ namespace C3Tools
 
         private void fromXbox(string image)
         {
-            var pngfile = Path.GetDirectoryName(image) + "\\album.png";
+            var pngfile = Path.Combine(Path.GetDirectoryName(image), "album.png");
             try
             {
-                Log(Tools.ConvertRBImage(image, pngfile, "png", true) ? "Converted album art file to 'album.png' successfully" : "There was an error when converting the album art file");
+                RBImageConvert.GameImageFileToBitmap(image).Save(pngfile, ImageFormat.Png);
+                Log("Converted album art file to 'album.png' successfully");
             }
             catch (Exception ex)
             {
@@ -620,7 +628,7 @@ namespace C3Tools
             }
 
             startTime = DateTime.Now;
-            PSFolder = txtFolder.Text + "\\Music\\";
+            PSFolder = Path.Combine(txtFolder.Text, "Music/");
             Tools.CurrentFolder = txtFolder.Text;
             EnableDisable(false);
             
@@ -669,7 +677,7 @@ namespace C3Tools
         {
             if (!picWorking.Visible)
             {
-                Tools.DeleteFolder(Application.StartupPath + "\\phaseshift\\");
+                Tools.DeleteFolder(Path.Combine(Application.StartupPath, "phaseshift/"));
                 return;
             }
             MessageBox.Show("Please wait until the current process finishes", Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -852,8 +860,8 @@ namespace C3Tools
         /// <returns></returns>
         public bool WriteINIFile(string output_folder, bool MentionC3)
         {
-            var ini = output_folder + "\\song.ini";
-            var ps = Application.StartupPath + "\\bin\\loading_phrase.txt";
+            var ini = Path.Combine(output_folder, "song.ini");
+            var ps = Path.Combine(Application.StartupPath, "bin/loading_phrase.txt");
             if (File.Exists(ps))
             {
                 try

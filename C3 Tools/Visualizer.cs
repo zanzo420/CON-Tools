@@ -379,9 +379,9 @@ namespace C3Tools
 
         public void getImage(String file)
         {
-            if (!Directory.Exists(Application.StartupPath + "\\visualizer\\"))
+            if (!Directory.Exists(Path.Combine(Application.StartupPath, "visualizer/")))
             {
-                Directory.CreateDirectory(Application.StartupPath + "\\visualizer\\");
+                Directory.CreateDirectory(Path.Combine(Application.StartupPath, "visualizer/"));
             }
             var ext = "";
             try
@@ -423,16 +423,14 @@ namespace C3Tools
                     }
                 }
                 if (string.IsNullOrWhiteSpace(AlbumArt)) return;
-                var newfile = Application.StartupPath + "\\visualizer\\" + Path.GetFileNameWithoutExtension(AlbumArt) + ".bmp";
+                var newfile = Path.Combine(Application.StartupPath, "visualizer", Path.GetFileNameWithoutExtension(AlbumArt) + ".bmp");
                 switch (ext)
                 {
                     case ".dds":
                     case ".png_ps3":
                     case ".png_xbox":
-                        if (Tools.ConvertRBImage(AlbumArt, newfile, "bmp"))
-                        {
-                            RESOURCE_ALBUM_ART = Tools.NemoLoadImage(newfile);
-                        }
+                        Bitmap converted = RBImageConvert.GameImageFileToBitmap(AlbumArt);
+                        converted.Save(newfile, ImageFormat.Bmp);
                         break;
                     case ".tpl":
                     case ".png_wii":

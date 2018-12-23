@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.IO;
 using zlib;
 
@@ -20,7 +21,7 @@ namespace C3Tools
         /// <param name="saveTEX">Save TEX?</param>
         /// <param name="format">Format to output the images to</param>
         /// <param name="outTexCount">Number of textures in Milo file</param>
-        public static void ExtractTextures(string inMilo, bool saveDDS, bool saveTEX, string format, out int outTexCount)
+        public static void ExtractTextures(string inMilo, bool saveDDS, bool saveTEX, ImageFormat imageFormat, out int outTexCount)
         {
             var texCount = 0;
             var Tools = new NemoTools();
@@ -65,10 +66,7 @@ namespace C3Tools
                 var ddsfiles = Directory.GetFiles(TexturesFolder, "*.dds");
                 foreach (var dds in ddsfiles)
                 {
-                    if (!string.IsNullOrWhiteSpace(format))
-                    {
-                        Tools.ConvertRBImage(dds, dds, format);
-                    }
+                    RBImageConvert.GameImageFileToBitmap(dds).Save(dds, imageFormat);
                     if (!saveDDS)
                     {
                         Tools.DeleteFile(dds);

@@ -668,6 +668,7 @@ namespace C3Tools
         public int GetVolumeLevel(string line)
         {
             var volume = line.Replace("mute_volume_vocals", "");
+            volume = volume.Replace("mute_volume", "");
             volume = volume.Replace("(", "");
             volume = volume.Replace(")", "");
             volume = volume.Replace("'", "");

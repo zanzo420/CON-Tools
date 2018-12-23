@@ -38,8 +38,6 @@ namespace C3Tools
             var pngfile = tplfile.Replace(".tpl", ".png");
             var Headers = new ImageHeaders();
 
-            isVerticalTexture = false;
-            isHorizontalTexture = false;
             TextureSize = 128;
 
             DeleteFile(pngfile);
@@ -60,7 +58,6 @@ namespace C3Tools
                     if (wii_header.SequenceEqual(Headers.wii_128x256))
                     {
                         tpl_header = Headers.tpl_128x256;
-                        isVerticalTexture = true;
                         TextureSize = 256;
                     }
                     else if (wii_header.SequenceEqual(Headers.wii_128x128_rgba32))
@@ -223,10 +220,7 @@ namespace C3Tools
                 var ext = Path.GetExtension(image_path);
                 if (ext == ".png_xbox" || ext == ".png_ps3")
                 {
-                    if (!ConvertRBImage(image_path, pngfile, "png", false))
-                    {
-                        return false;
-                    }
+                    RBImageConvert.GameImageFileToBitmap(image_path).Save(pngfile);
                     image_path = pngfile;
                 }
                 if (!ResizeImage(image_path, 256, "png", pngfile))
@@ -405,8 +399,7 @@ namespace C3Tools
 
         public string CurrentFolder = ""; //used throughout the program to maintain the current working folder
         public string MIDI_ERROR_MESSAGE;
-        public bool isHorizontalTexture;
-        public bool isVerticalTexture;
+
         private int TextureDivider = 2; //default value
         public int TextureSize = 512; //default value
         public bool KeepDDS = false;
@@ -804,15 +797,12 @@ namespace C3Tools
                 // Enable overwriting destination file
                 Il.ilEnable(Il.IL_FILE_OVERWRITE);
 
-                var height = isHorizontalTexture ? image_size / TextureDivider : image_size;
-                var width = isVerticalTexture ? image_size / TextureDivider : image_size;
-
                 //assume we're downscaling, this is better filter
                 const int scaler = Ilu.ILU_BILINEAR;
 
                 //resize image
                 Ilu.iluImageParameter(Ilu.ILU_FILTER, scaler);
-                Ilu.iluScale(width, height, 1);
+                Ilu.iluScale(image_size, image_size, 1);
 
                 if (format.ToLowerInvariant().Contains("bmp"))
                 {
@@ -883,514 +873,6 @@ namespace C3Tools
             return ResizeImage(image_path, image_size, format);
         }
 
-        /// <summary>
-        /// Converts png_xbox image to png_ps3 image
-        /// </summary>
-        /// <param name="image">Full file path to the image to be converted</param>
-        /// <param name="output_path">Full directory path where new image is to be saved</param>
-        /// <param name="delete_original">Whether to delete the original image upon completion</param>
-        /// <returns></returns>
-        public bool ConvertXboxtoPS3(string image, string output_path, bool delete_original)
-        {
-            return FlipRBImageBytes(image, output_path, "ps3", delete_original);
-        }
-
-        /// <summary>
-        /// Converts png_ps3 image to png_xbox image
-        /// </summary>
-        /// <param name="image">Full file path to the image to be converted</param>
-        /// <param name="output_path">Full directory path where new image is to be saved</param>
-        /// <param name="delete_original">Whether to delete the original image upon completion</param>
-        /// <returns></returns>
-        public bool ConvertPS3toXbox(string image, string output_path, bool delete_original)
-        {
-            return FlipRBImageBytes(image, output_path, "xbox", delete_original);
-        }
-
-        /// <summary>
-        /// Converts png_xbox to/from png_ps3
-        /// </summary>
-        /// <param name="image">Full file path to the image to convert</param>
-        /// <param name="output_path">Full directory path where new image is to be saved</param>
-        /// <param name="extension">Either 'xbox' or 'ps3'</param>
-        /// <param name="delete_original">Whether to delete the original</param>
-        /// <returns></returns>
-        private bool FlipRBImageBytes(string image, string output_path, string extension, bool delete_original)
-        {
-            try
-            {
-                var output_image = Path.GetDirectoryName(output_path) + "\\" + Path.GetFileNameWithoutExtension(output_path) + ".png_" + extension.ToLowerInvariant();
-
-                if (output_image == image)
-                {
-                    return true; //why are you wasting my time?
-                }
-
-                //read all raw bytes
-                var ddsbytes = File.ReadAllBytes(image);
-                var buffer = new byte[4];
-                var swap = new byte[4];
-
-                //get filesize / 4 for number of times to loop
-                //32 is size of HMX header
-                var loop = (ddsbytes.Length - 32) / 4;
-
-                //grab the header
-                var header = new byte[32];
-                var header_stream = new MemoryStream(ddsbytes, 0, 32);
-                header_stream.Read(header, 0, 32);
-
-                //skip the HMX header = leaves us with image bytes
-                var input = new MemoryStream(ddsbytes, 32, ddsbytes.Length - 32);
-
-                //create new image
-                var output = new FileStream(output_image, FileMode.Create);
-
-                //both png_xbox and png_ps3 files use the same header, put it back
-                output.Write(header, 0, header.Length);
-
-                //here we go
-                for (var x = 0; x <= loop; x++)
-                {
-                    input.Read(buffer, 0, 4);
-
-                    swap[0] = buffer[1];
-                    swap[1] = buffer[0];
-                    swap[2] = buffer[3];
-                    swap[3] = buffer[2];
-
-                    output.Write(swap, 0x00, 4);
-                }
-                input.Dispose();
-                output.Dispose();
-
-                if (delete_original)
-                {
-                    DeleteFile(image);
-                }
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-            return true;
-        }
-
-        private static byte[] BuildDDSHeader(string format, int width, int height)
-        {
-            var dds = new byte[] //512x512 DXT5
-                {
-                    0x44, 0x44, 0x53, 0x20, 0x7C, 0x00, 0x00, 0x00, 0x07, 0x10, 0x0A, 0x00, 0x00, 0x02, 0x00, 0x00, 
-                    0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x4E, 0x45, 0x4D, 0x4F, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 
-                    0x04, 0x00, 0x00, 0x00, 0x44, 0x58, 0x54, 0x35, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-                };
-
-            switch (format.ToLowerInvariant())
-            {
-                case "dxt1":
-                    dds[87] = 0x31;
-                    break;
-                case "dxt3":
-                    dds[87] = 0x33;
-                    break;
-                case "normal":
-                    dds[84] = 0x41;
-                    dds[85] = 0x54;
-                    dds[86] = 0x49;
-                    dds[87] = 0x32;
-                    break;
-            }
-
-            switch (height)
-            {
-                case 8:
-                    dds[12] = 0x08;
-                    dds[13] = 0x00;
-                    break;
-                case 16:
-                    dds[12] = 0x10;
-                    dds[13] = 0x00;
-                    break;
-                case 32:
-                    dds[12] = 0x20;
-                    dds[13] = 0x00;
-                    break;
-                case 64:
-                    dds[12] = 0x40;
-                    dds[13] = 0x00;
-                    break;
-                case 128:
-                    dds[12] = 0x80;
-                    dds[13] = 0x00;
-                    break;
-                case 256:
-                    dds[13] = 0x01;
-                    break;
-                case 1024:
-                    dds[13] = 0x04;
-                    break;
-                case 2048:
-                    dds[13] = 0x08;
-                    break;
-            }
-
-            switch (width)
-            {
-                case 8:
-                    dds[16] = 0x08;
-                    dds[17] = 0x00;
-                    break;
-                case 16:
-                    dds[16] = 0x10;
-                    dds[17] = 0x00;
-                    break;
-                case 32:
-                    dds[16] = 0x20;
-                    dds[17] = 0x00;
-                    break;
-                case 64:
-                    dds[16] = 0x40;
-                    dds[17] = 0x00;
-                    break;
-                case 128:
-                    dds[16] = 0x80;
-                    dds[17] = 0x00;
-                    break;
-                case 256:
-                    dds[17] = 0x01;
-                    break;
-                case 1024:
-                    dds[17] = 0x04;
-                    break;
-                case 2048:
-                    dds[17] = 0x08;
-                    break;
-            }
-            return dds;
-        }
-
-        /// <summary>
-        /// Figure out right DDS header to go with HMX texture
-        /// </summary>
-        /// <param name="full_header">First 16 bytes of the png_xbox/png_ps3 file</param>
-        /// <param name="short_header">Bytes 5-16 of the png_xbox/png_ps3 file</param>
-        /// <returns></returns>
-        private byte[] GetDDSHeader(IEnumerable<byte> full_header, IEnumerable<byte> short_header)
-        {
-            //official album art header, most likely to be the one being requested
-            var header = BuildDDSHeader("dxt1", 256, 256);
-
-            var headers = Directory.GetFiles(Application.StartupPath + "\\bin\\headers\\", "*.header");
-            DDS_Format = "UNKNOWN";
-            foreach (var head_name in from head in headers let header_bytes = File.ReadAllBytes(head) where full_header.SequenceEqual(header_bytes) || short_header.SequenceEqual(header_bytes) select Path.GetFileNameWithoutExtension(head).ToLowerInvariant())
-            {
-                DDS_Format = "DXT5";
-                if (head_name.Contains("dxt1"))
-                {
-                    DDS_Format = "DXT1";
-                }
-                else if (head_name.Contains("normal"))
-                {
-                    DDS_Format = "NORMAL_MAP";
-                }
-
-                var index1 = head_name.IndexOf("_", StringComparison.Ordinal) + 1;
-                var index2 = head_name.IndexOf("x", StringComparison.Ordinal);
-                var width = Convert.ToInt16(head_name.Substring(index1, index2 - index1));
-                index1 = head_name.IndexOf("_", index2, StringComparison.Ordinal);
-                index2++;
-                var height = Convert.ToInt16(head_name.Substring(index2, index1 - index2));
-
-                header = BuildDDSHeader(DDS_Format.ToLowerInvariant().Replace("_map", ""), width, height);
-                break;
-            }
-            return header;
-        }
-
-        /// <summary>
-        /// Converts png_xbox files to usable format
-        /// </summary>
-        /// <param name="rb_image">Full path to the png_xbox / png_ps3 / dds file</param>
-        /// <param name="output_path">Full path you'd like to save the converted image</param>
-        /// <param name="format">Allowed formats: BMP | JPG | PNG (default)</param>
-        /// <param name="delete_original">True: delete | False: keep (default)</param>
-        /// <returns></returns>
-        public bool ConvertRBImage(string rb_image, string output_path, string format, bool delete_original)
-        {
-            var ddsfile = Path.GetDirectoryName(output_path) + "\\" + Path.GetFileNameWithoutExtension(output_path) + ".dds";
-            var tgafile = ddsfile.Replace(".dds", ".tga");
-
-            TextureSize = 256; //default size album art
-            TextureDivider = 2; //default to divide larger size by, always multiples of 2
-            isHorizontalTexture = false; //this is a rectangle wider than tall
-            isVerticalTexture = false; //this is a rectangle taller than wide
-
-            var nv_tool = Application.StartupPath + "\\bin\\nvdecompress.exe";
-            if (!File.Exists(nv_tool))
-            {
-                MessageBox.Show("nvdecompress.exe is missing and is required\nProcess aborted", "Nemo Tools", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
-
-            try
-            {
-                if (ddsfile != rb_image)
-                {
-                    DeleteFile(ddsfile);
-                }
-                DeleteFile(tgafile);
-
-                //read raw file bytes
-                var ddsbytes = File.ReadAllBytes(rb_image);
-
-                if (!rb_image.EndsWith(".dds", StringComparison.Ordinal))
-                {
-                    var buffer = new byte[4];
-                    var swap = new byte[4];
-
-                    //get filesize / 4 for number of times to loop
-                    //32 is the size of the HMX header to skip
-                    var loop = (ddsbytes.Length - 32) / 4;
-
-                    //skip the HMX header
-                    var input = new MemoryStream(ddsbytes, 32, ddsbytes.Length - 32);
-
-                    //grab HMX header to compare against known headers
-                    var full_header = new byte[16];
-                    var file_header = new MemoryStream(ddsbytes, 0, 16);
-                    file_header.Read(full_header, 0, 16);
-                    file_header.Dispose();
-
-                    //some games have a bunch of headers for the same files, so let's skip the varying portion and just
-                    //grab the part that tells us the dimensions and image format
-                    var short_header = new byte[11];
-                    file_header = new MemoryStream(ddsbytes, 5, 11);
-                    file_header.Read(short_header, 0, 11);
-                    file_header.Dispose();
-
-                    //create dds file
-                    var output = new FileStream(ddsfile, FileMode.Create);
-                    var header = GetDDSHeader(full_header, short_header);
-                    output.Write(header, 0, header.Length);
-
-                    //here we go
-                    for (var x = 0; x <= loop; x++)
-                    {
-                        input.Read(buffer, 0, 4);
-
-                        //PS3 images are not byte swapped, just DDS images with HMX header on top
-                        if (rb_image.EndsWith("_ps3", StringComparison.Ordinal))
-                        {
-                            swap = buffer;
-                        }
-                        else
-                        {
-                            //XBOX images are byte swapped, so we gotta return it
-                            swap[0] = buffer[1];
-                            swap[1] = buffer[0];
-                            swap[2] = buffer[3];
-                            swap[3] = buffer[2];
-                        }
-                        output.Write(swap, 0, 4);
-                    }
-                    input.Dispose();
-                    output.Dispose();
-                }
-                else
-                {
-                    ddsfile = rb_image;
-                }
-
-                //read raw dds bytes
-                ddsbytes = File.ReadAllBytes(ddsfile);
-
-                //grab relevant part of dds header
-                var header_stream = new MemoryStream(ddsbytes, 0, 32);
-                var size = new byte[32];
-                header_stream.Read(size, 0, 32);
-                header_stream.Dispose();
-
-                //default to 256x256
-                var width = 256;
-                var height = 256;
-
-                //get dds dimensions from header
-                switch (size[17]) //width byte
-                {
-                    case 0x00:
-                        switch (size[16])
-                        {
-                            case 0x08:
-                                width = 8;
-                                break;
-                            case 0x10:
-                                width = 16;
-                                break;
-                            case 0x20:
-                                width = 32;
-                                break;
-                            case 0x40:
-                                width = 64;
-                                break;
-                            case 0x80:
-                                width = 128;
-                                break;
-                        }
-                        break;
-                    case 0x02:
-                        width = 512;
-                        break;
-                    case 0x04:
-                        width = 1024;
-                        break;
-                    case 0x08:
-                        width = 2048;
-                        break;
-                }
-                switch (size[13]) //height byte
-                {
-                    case 0x00:
-                        switch (size[12])
-                        {
-                            case 0x08:
-                                height = 8;
-                                break;
-                            case 0x10:
-                                height = 16;
-                                break;
-                            case 0x20:
-                                height = 32;
-                                break;
-                            case 0x40:
-                                height = 64;
-                                break;
-                            case 0x80:
-                                height = 128;
-                                break;
-                        }
-                        break;
-                    case 0x02:
-                        height = 512;
-                        break;
-                    case 0x04:
-                        height = 1024;
-                        break;
-                    case 0x08:
-                        height = 2048;
-                        break;
-                }
-
-                if (width > height)
-                {
-                    isHorizontalTexture = true;
-                    TextureDivider = width / height;
-                    TextureSize = width;
-                }
-                else if (height > width)
-                {
-                    isVerticalTexture = true;
-                    TextureDivider = height / width;
-                    TextureSize = height;
-                }
-                else
-                {
-                    TextureSize = width;
-                }
-
-                var arg = "\"" + ddsfile + "\"";
-                var startInfo = new ProcessStartInfo
-                {
-                    CreateNoWindow = true,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    FileName = nv_tool,
-                    Arguments = arg,
-                    WorkingDirectory = Application.StartupPath + "\\bin\\"
-                };
-                var process = Process.Start(startInfo);
-                do
-                {
-                    //
-                } while (!process.HasExited);
-                process.Dispose();
-
-                if (!ResizeImage(tgafile, TextureSize, format, output_path))
-                {
-                    DeleteFile(tgafile);
-                    return false;
-                }
-                if (!rb_image.EndsWith(".dds", StringComparison.Ordinal) && !KeepDDS)
-                {
-                    DeleteFile(ddsfile);
-                }
-                if (!format.ToLowerInvariant().Contains("tga"))
-                {
-                    DeleteFile(tgafile);
-                }
-                if (delete_original)
-                {
-                    SendtoTrash(rb_image);
-                }
-                return true;
-            }
-            catch (Exception)
-            {
-                if (!rb_image.EndsWith(".dds", StringComparison.Ordinal))
-                {
-                    DeleteFile(ddsfile);
-                }
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Converts png_xbox files to usable format
-        /// </summary>
-        /// <param name="rb_image">Full path to the png_xbox / png_ps3 / dds file</param>
-        /// <param name="output_path">Full path you'd like to save the converted image</param>
-        /// <param name="format">Allowed formats: BMP | JPG | PNG (default)</param>
-        /// <returns></returns>
-        public bool ConvertRBImage(string rb_image, string output_path, string format)
-        {
-            return ConvertRBImage(rb_image, output_path, format, false);
-        }
-
-        /// <summary>
-        /// Converts png_xbox files to usable format
-        /// </summary>
-        /// <param name="rb_image">Full path to the png_xbox / png_ps3 / dds file</param>
-        /// <param name="output_path">Full path you'd like to save the converted image</param>
-        /// <returns></returns>
-        public bool ConvertRBImage(string rb_image, string output_path)
-        {
-            return ConvertRBImage(rb_image, output_path, "png", false);
-        }
-
-        /// <summary>
-        /// Converts png_xbox files to usable format
-        /// </summary>
-        /// <param name="rb_image">Full path to the png_xbox / png_ps3 / dds file</param>
-        /// <returns></returns>
-        public bool ConvertRBImage(string rb_image)
-        {
-            return ConvertRBImage(rb_image, rb_image, "png", false);
-        }
-
-        /// <summary>
-        /// Converts png_xbox files to usable format
-        /// </summary>
-        /// <param name="rb_image">Full path to the png_xbox / png_ps3 / dds file</param>
-        /// <param name="delete_original">True - delete | False - keep (default)</param>
-        /// <returns></returns>
-        public bool ConvertRBImage(string rb_image, bool delete_original)
-        {
-            return ConvertRBImage(rb_image, rb_image, "png", delete_original);
-        }
         #endregion
 
         #region Misc Stuff
@@ -2145,7 +1627,7 @@ namespace C3Tools
             //MIDIs with those situations
             //thanks raynebc we can fix them first and load the fixed MIDIs
             var midishrink = Application.StartupPath + "\\bin\\midishrink.exe";
-            if (!File.Exists(midishrink)) return null;
+            //if (!File.Exists(midishrink)) return null;
             var midi_out = Application.StartupPath + "\\bin\\temp.mid";
             DeleteFile(midi_out);
             MidiFile MIDI;
@@ -2559,7 +2041,7 @@ namespace C3Tools
                     var outfile = OUTPUT_CHAR + CHAR_COUNTER + ext;
                     DeleteFile(outfile);
                     File.WriteAllBytes(outfile, img_bytes);
-                    ConvertRBImage(outfile);
+                    RBImageConvert.GameImageFileToBitmap(outfile).Save(outfile, ImageFormat.Png);
                 }
                 
                 //grab art images
@@ -2597,7 +2079,7 @@ namespace C3Tools
                     var outfile = OUTPUT_ART + ART_COUNTER + ext;
                     DeleteFile(outfile);
                     File.WriteAllBytes(outfile, img_bytes);
-                    ConvertRBImage(outfile);
+                    RBImageConvert.GameImageFileToBitmap(outfile).Save(outfile, ImageFormat.Png);
                 }
 
                 var success = ART_COUNTER != 0 || CHAR_COUNTER != 0;

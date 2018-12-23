@@ -539,9 +539,28 @@ namespace C3Tools
                             if (Tools.MoveFile(art[0], newart))
                             {
                                 Log("Extracted album art file " + Path.GetFileName(newart) + " successfully");
-                                Log(Tools.ConvertXboxtoPS3(newart, newart, true)
-                                    ? "Converted album art from png_xbox to png_ps3 successfully"
-                                    : "There was a problem converting the album art to png_ps3 format");
+
+                                try
+                                {
+                                    byte[] newBytes;
+
+                                    using (FileStream stream = new FileStream(newart, FileMode.Open))
+                                    {
+                                        newBytes = new RBGameImage(stream, true).ToPS3Bytes();
+                                    }
+
+                                    using (FileStream stream = new FileStream(Path.ChangeExtension(newart, "png_ps3"),
+                                        FileMode.Create))
+                                    {
+                                        stream.Write(newBytes, 0, newBytes.Length);
+                                    }
+                                    
+                                    Log("Converted album art from png_xbox to png_ps3 successfully");
+                                }
+                                catch
+                                {
+                                    Log("There was a problem converting the album art to png_ps3 format");
+                                }
                             }
                             else
                             {

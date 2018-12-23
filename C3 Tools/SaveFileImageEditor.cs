@@ -525,8 +525,7 @@ namespace C3Tools
 
             Tools.isSaveFileCharacter = true;
             Tools.isSaveFileArt = false;
-            Tools.TextureSize = isWii? 256 : 512;
-            Tools.isVerticalTexture = true;
+            Tools.TextureSize = isWii ? 256 : 512;
 
             if (isWii)
             {
@@ -543,11 +542,11 @@ namespace C3Tools
                 Tools.DeleteFile(file);
                 if (isWii)
                 {
-                    Tools.ConvertWiiImage(xfile, image, file);
+                    Tools.ConvertWiiImage(xfile, file);
                 }
                 else
                 {
-                    Tools.ConvertRBImage(xfile, file);
+                    RBImageConvert.GameImageFileToBitmap(xfile).Save(file, ImageFormat.Png);
                 }
                 picCharacter.Image = Tools.NemoLoadImage(file);
                 Log("Replaced image for character '" + cboCharacter.Items[cboCharacter.SelectedIndex] + "' successfully");
@@ -590,7 +589,6 @@ namespace C3Tools
             Tools.isSaveFileCharacter = false;
             Tools.isSaveFileArt = true;
             Tools.TextureSize = isWii ? 128 : 256;
-            Tools.isVerticalTexture = false;
 
             if (isWii)
             {
@@ -607,11 +605,11 @@ namespace C3Tools
                 Tools.DeleteFile(file);
                 if (isWii)
                 {
-                    Tools.ConvertWiiImage(xfile, image, file);
+                    Tools.ConvertWiiImage(xfile, file);
                 }
                 else
                 {
-                    Tools.ConvertRBImage(xfile, file);
+                    RBImageConvert.GameImageFileToBitmap(xfile).Save(file, ImageFormat.Png);
                 }
                 picArt.Image = Tools.NemoLoadImage(file);
                 Log("Replaced art image '" + cboArt.Items[cboArt.SelectedIndex] + "' successfully");

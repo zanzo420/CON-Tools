@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -2623,13 +2624,9 @@ namespace C3Tools
                 size = Math.Round((double)fileSize.Length / 1024, 2) + " KB";
             }
             Log("Album Art File Size", fileSize.Length.ToString(CultureInfo.InvariantCulture) + " bytes (" + size + ")");
-            var temp = Application.StartupPath + "\\bin\\temp.png";
+            var temp = Path.Combine(Application.StartupPath, "bin/temp.png");
             Tools.DeleteFile(temp);
-            if (!Tools.ConvertRBImage(art,temp,"png", false))
-            {
-                Log("No more information available");
-                return;
-            }
+            RBImageConvert.GameImageFileToBitmap(art).Save(temp, ImageFormat.Png);
             var img = Image.FromFile(temp);
             Log("Album Art Dimensions", img.Width + "x" + img.Height);
             img.Dispose();

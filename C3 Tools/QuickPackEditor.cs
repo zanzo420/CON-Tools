@@ -1034,10 +1034,10 @@ namespace C3Tools
 
                         var thumbnail = tempfolder + "temp.png";
                         Tools.DeleteFile(thumbnail);
-                        var albumart = songsfolder + song.InternalName + "\\gen\\" + song.InternalName + "_keep.png_xbox";
+                        var albumart = Path.Combine(songsfolder, song.InternalName, "gen", song.InternalName + "_keep.png_xbox");
                         if (useSongAlbumArt.Checked && File.Exists(albumart))
                         {
-                            thumbnail = Tools.ConvertRBImage(albumart, thumbnail, "png") ? thumbnail : "";
+                            RBImageConvert.GameImageFileToBitmap(albumart).Save(thumbnail, ImageFormat.Png);
                             thumbnail = Tools.ResizeImage(thumbnail, 64, "png") ? thumbnail : "";
                         }
 

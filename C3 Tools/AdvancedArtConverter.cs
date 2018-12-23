@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Drawing.Imaging;
 using C3Tools.Properties;
 
 namespace C3Tools
@@ -334,7 +335,7 @@ namespace C3Tools
                 Log("Error converting from " + format + " format");
             }
         }
-        
+
         private void FromPS3(string image)
         {
             if (!File.Exists(image)) return;
@@ -342,32 +343,34 @@ namespace C3Tools
             imgCounter++;
             Log("Converting file " + imgCounter + " of " + imagesPS3.Count());
             Log(" - " + Path.GetFileName(image));
-            
-            var success = false;
-            // Save the image
-            if (chkPS3BMP.Checked)
-            {
-                success = Tools.ConvertRBImage(image, image, "bmp");
-            }
-            if (chkPS3PNG.Checked)
-            {
-                success = Tools.ConvertRBImage(image, image, "png");
-            }
-            if (chkPS3JPG.Checked)
-            {
-                success = Tools.ConvertRBImage(image, image, "jpg");
-            }
 
-            if (success)
-            {
+            try {
+                // Save the image
+                Bitmap bitmap = RBImageConvert.GameImageFileToBitmap(image);
+                if (chkPS3BMP.Checked)
+                {
+                    bitmap.Save(Path.ChangeExtension(image, "bmp"), ImageFormat.Bmp);
+                }
+    
+                if (chkPS3PNG.Checked)
+                {
+                    bitmap.Save(Path.ChangeExtension(image, "png"), ImageFormat.Png);
+                }
+    
+                if (chkPS3JPG.Checked)
+                {
+                    bitmap.Save(Path.ChangeExtension(image, "jpg"), ImageFormat.Jpeg);
+                }
+    
                 //if clean up box checked, delete originals
                 if (chkCleanUpPS3.Checked)
                 {
                     Tools.SendtoTrash(image);
                 }
+    
                 Log("Converted from png_ps3 format successfully");
             }
-            else
+            catch
             {
                 Log("Error converting from png_ps3 format");
             }
@@ -382,23 +385,24 @@ namespace C3Tools
             Log(" - " + Path.GetFileName(image));
             var format = Path.GetExtension(image).Replace(".", "").Trim().ToLowerInvariant();
 
-            var success = false;
-            // Save the image
-            if (chkXboxBMP.Checked)
-            {
-                success = Tools.ConvertRBImage(image, image, "bmp");
-            }
-            if (chkXboxPNG.Checked)
-            {
-                success = Tools.ConvertRBImage(image, image, "png");
-            }
-            if (chkXboxJPG.Checked)
-            {
-                success = Tools.ConvertRBImage(image, image, "jpg");
-            }
-            
-            if (success)
-            {
+            try {
+                // Save the image
+                Bitmap bitmap = RBImageConvert.GameImageFileToBitmap(image);
+                if (chkXboxBMP.Checked)
+                {
+                    bitmap.Save(Path.ChangeExtension(image, "bmp"), ImageFormat.Bmp);
+                }
+        
+                if (chkXboxPNG.Checked)
+                {
+                    bitmap.Save(Path.ChangeExtension(image, "png"), ImageFormat.Png);
+                }
+        
+                if (chkXboxJPG.Checked)
+                {
+                    bitmap.Save(Path.ChangeExtension(image, "jpg"), ImageFormat.Jpeg);
+                }
+    
                 //if clean up box checked, delete originals
                 if (chkCleanUpXbox.Checked)
                 {
@@ -406,7 +410,7 @@ namespace C3Tools
                 }
                 Log("Converted from " + format + " format successfully");
             }
-            else
+            catch
             {
                 Log("Error converting from " + format + " format");
             }
@@ -631,14 +635,14 @@ namespace C3Tools
             {
                 if (!File.Exists(milo)) continue;
 
-                var format = "png";
+                ImageFormat format = ImageFormat.Png;
                 if (chkXboxBMP.Checked)
                 {
-                    format = "bmp";
+                    format = ImageFormat.Bmp;
                 }
                 if (chkXboxJPG.Checked)
                 {
-                    format = "jpg";
+                    format = ImageFormat.Jpeg;
                 }
 
                 Log("Searching .milo_ps3 file for textures");
@@ -683,14 +687,14 @@ namespace C3Tools
             {
                 if (!File.Exists(milo)) continue;
                 
-                var format = "png";
+                ImageFormat format = ImageFormat.Png;
                 if (chkXboxBMP.Checked)
                 {
-                    format = "bmp";
+                    format = ImageFormat.Bmp;
                 }
                 if (chkXboxJPG.Checked)
                 {
-                    format = "jpg";
+                    format = ImageFormat.Jpeg;
                 }
                 Log("Searching .milo_xbox file for textures");
                 Log(" - " + Path.GetFileName(milo));
@@ -756,7 +760,7 @@ namespace C3Tools
             chkPS3PNG.Enabled = btnFromPS3.Enabled;
         }
         
-        private void ToXbox(string image, bool flip_bytes = false)
+        private void ToXbox(string image, bool isPS3Image = false)
         {
             if (!File.Exists(image)) return;
 
@@ -764,8 +768,16 @@ namespace C3Tools
             Log("Converting file " + imgCounter + " of " + (imageCount + imagesDDS.Count() + imagesPS3.Count()));
             Log(" - " + Path.GetFileName(image));
 
-            var success = flip_bytes ? Tools.ConvertPS3toXbox(image, image, chkCleanUpXbox.Checked) : Tools.ConvertImagetoRB(image, image, chkCleanUpXbox.Checked);
-            Log(success? "Converted to png_xbox format successfully" : "Error converting to png_xbox format");
+            using (FileStream stream = new FileStream(image, FileMode.Open))
+            {
+                byte[] newBytes = isPS3Image
+                    ? new RBGameImage(stream, false).ToXboxBytes()
+                    : null; // RBGameImage.FromImage(stream).ToXboxBytes(); TODO
+
+                // TODO: write to file (output path is input image)
+            }
+
+//            Log(success? "Converted to png_xbox format successfully" : "Error converting to png_xbox format");
         }
 
         private void ToWii(string image)
@@ -779,7 +791,7 @@ namespace C3Tools
             Log(Tools.ConvertImagetoWii(wimgt, image) ? "Converted to png_wii format successfully" : "Error converting to png_wii format");
         }
 
-        private void ToPS3(string image, bool flip_bytes = false)
+        private void ToPS3(string image, bool isXboxImage = false)
         {
             if (!File.Exists(image)) return;
 
@@ -787,8 +799,15 @@ namespace C3Tools
             Log("Converting file " + imgCounter + " of " + (imageCount + imagesDDS.Count() + imagesXbox.Count()));
             Log(" - " + Path.GetFileName(image));
 
-            var success = flip_bytes ? Tools.ConvertXboxtoPS3(image, image, chkCleanUpPS3.Checked) : Tools.ConvertImagetoRB(image, image, chkCleanUpPS3.Checked,true);
-            Log(success ? "Converted to png_ps3 format successfully" : "Error converting to png_ps3 format");
+            using (FileStream stream = new FileStream(image, FileMode.Open))
+            {
+                byte[] newBytes = isXboxImage
+                    ? new RBGameImage(stream, true).ToPS3Bytes()
+                    : null; // RBGameImage.FromImage(stream).ToPS3Bytes(); TODO
+                // TODO: write to file (output path is input image)
+            }
+
+//            Log(success ? "Converted to png_ps3 format successfully" : "Error converting to png_ps3 format");
         }
 
         private void x256ToolStripMenuItem_Click(object sender, EventArgs e)
