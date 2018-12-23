@@ -914,8 +914,8 @@ namespace C3Tools
                     return;
                 }
                 
-                var newimage = Application.StartupPath + "\\" + Path.GetFileNameWithoutExtension(contentImage) + ".png";
-                Tools.ResizeImage(contentImage, 64, "png", newimage);
+                var newimage = Path.Combine(Application.StartupPath, Path.GetFileNameWithoutExtension(contentImage) + ".png");
+                Tools.ResizeImage(contentImage, 64, NemoTools.ImageFormat.PNG, newimage);
                     
                 if (File.Exists(newimage))
                 {

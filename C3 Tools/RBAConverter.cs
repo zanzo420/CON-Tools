@@ -239,7 +239,7 @@ namespace C3Tools
 
                             thumbnail = fname.Replace(".bmp", ".png");
                             Tools.DeleteFile(thumbnail);
-                            Tools.ResizeImage(fname, 64, "png", thumbnail);
+                            Tools.ResizeImage(fname, 64, NemoTools.ImageFormat.PNG, thumbnail);
                             if (!File.Exists(thumbnail))
                             {
                                 thumbnail = "";

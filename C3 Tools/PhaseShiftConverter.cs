@@ -526,7 +526,7 @@ namespace C3Tools
             var pngfile = Path.GetDirectoryName(image) + "\\album.png";
             try
             {
-                Log(Tools.ConvertRBImage(image, pngfile, "png", true) ? "Converted album art file to 'album.png' successfully" : "There was an error when converting the album art file");
+                Log(Tools.ConvertRBImage(image, pngfile, NemoTools.ImageFormat.PNG, true) ? "Converted album art file to 'album.png' successfully" : "There was an error when converting the album art file");
             }
             catch (Exception ex)
             {

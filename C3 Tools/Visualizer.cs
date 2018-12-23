@@ -429,14 +429,14 @@ namespace C3Tools
                     case ".dds":
                     case ".png_ps3":
                     case ".png_xbox":
-                        if (Tools.ConvertRBImage(AlbumArt, newfile, "bmp"))
+                        if (Tools.ConvertRBImage(AlbumArt, newfile, NemoTools.ImageFormat.BMP))
                         {
                             RESOURCE_ALBUM_ART = Tools.NemoLoadImage(newfile);
                         }
                         break;
                     case ".tpl":
                     case ".png_wii":
-                        if (Tools.ConvertWiiImage(AlbumArt, newfile, "bmp"))
+                        if (Tools.ConvertWiiImage(AlbumArt, newfile, NemoTools.ImageFormat.BMP))
                         {
                             RESOURCE_ALBUM_ART = Tools.NemoLoadImage(newfile);
                         }

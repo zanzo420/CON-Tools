@@ -2625,7 +2625,7 @@ namespace C3Tools
             Log("Album Art File Size", fileSize.Length.ToString(CultureInfo.InvariantCulture) + " bytes (" + size + ")");
             var temp = Application.StartupPath + "\\bin\\temp.png";
             Tools.DeleteFile(temp);
-            if (!Tools.ConvertRBImage(art,temp,"png", false))
+            if (!Tools.ConvertRBImage(art,temp,NemoTools.ImageFormat.PNG, false))
             {
                 Log("No more information available");
                 return;

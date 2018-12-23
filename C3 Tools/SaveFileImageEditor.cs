@@ -543,7 +543,7 @@ namespace C3Tools
                 Tools.DeleteFile(file);
                 if (isWii)
                 {
-                    Tools.ConvertWiiImage(xfile, image, file);
+                    Tools.ConvertWiiImage(xfile, file);
                 }
                 else
                 {
@@ -607,7 +607,7 @@ namespace C3Tools
                 Tools.DeleteFile(file);
                 if (isWii)
                 {
-                    Tools.ConvertWiiImage(xfile, image, file);
+                    Tools.ConvertWiiImage(xfile, file);
                 }
                 else
                 {

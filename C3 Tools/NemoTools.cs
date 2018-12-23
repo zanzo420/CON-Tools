@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace C3Tools
         /// <param name="format">Allowed formats: BMP | JPG | PNG (default)</param>
         /// <param name="delete_original">True: delete | False: keep (default)</param>
         /// <returns></returns>
-        public bool ConvertWiiImage(string wii_image, string output_path, string format, bool delete_original)
+        public bool ConvertWiiImage(string wii_image, string output_path, ImageFormat format, bool delete_original = false)
         {
             var tplfile = Path.GetDirectoryName(wii_image) + "\\" + Path.GetFileNameWithoutExtension(wii_image) + ".tpl";
             var pngfile = tplfile.Replace(".tpl", ".png");
@@ -122,7 +123,7 @@ namespace C3Tools
                     }
                     return false;
                 }
-                if (!format.ToLowerInvariant().Contains("png"))
+                if (format != ImageFormat.PNG)
                 {
                     var image = NemoLoadImage(pngfile);
                     if (!ResizeImage(pngfile, image.Width, format, output_path))
@@ -138,7 +139,7 @@ namespace C3Tools
                 {
                     DeleteFile(tplfile);
                 }
-                if (!format.ToLowerInvariant().Contains("png"))
+                if (format != ImageFormat.PNG)
                 {
                     DeleteFile(pngfile);
                 }
@@ -158,18 +159,6 @@ namespace C3Tools
                 return false;
             }
         }
-
-        /// <summary>
-        /// Converts png_wii files to usable format
-        /// </summary>
-        /// <param name="wii_image">Full path to the png_xbox / png_ps3 / dds file</param>
-        /// <param name="output_path">Full path you'd like to save the converted image</param>
-        /// <param name="format">Allowed formats: BMP | JPG | PNG (default)</param>
-        /// <returns></returns>
-        public bool ConvertWiiImage(string wii_image, string output_path, string format)
-        {
-            return ConvertWiiImage(wii_image, output_path,format, false);
-        }
         
         /// <summary>
         /// Converts png_wii files to png format
@@ -179,7 +168,7 @@ namespace C3Tools
         /// <returns></returns>
         public bool ConvertWiiImage(string wii_image, string output_path)
         {
-            return ConvertWiiImage(wii_image, output_path, "png", false);
+            return ConvertWiiImage(wii_image, output_path, ImageFormat.PNG, false);
         }
 
         /// <summary>
@@ -189,7 +178,7 @@ namespace C3Tools
         /// <returns></returns>
         public bool ConvertWiiImage(string wii_image)
         {
-            return ConvertWiiImage(wii_image, wii_image, "png", false);
+            return ConvertWiiImage(wii_image, wii_image, ImageFormat.PNG, false);
         }
 
         /// <summary>
@@ -200,7 +189,7 @@ namespace C3Tools
         /// <returns></returns>
         public bool ConvertWiiImage(string wii_image, bool delete_original)
         {
-            return ConvertWiiImage(wii_image, wii_image, "png", delete_original);
+            return ConvertWiiImage(wii_image, wii_image, ImageFormat.PNG, delete_original);
         }
 
         /// <summary>
@@ -223,13 +212,13 @@ namespace C3Tools
                 var ext = Path.GetExtension(image_path);
                 if (ext == ".png_xbox" || ext == ".png_ps3")
                 {
-                    if (!ConvertRBImage(image_path, pngfile, "png", false))
+                    if (!ConvertRBImage(image_path, pngfile, ImageFormat.PNG, false))
                     {
                         return false;
                     }
                     image_path = pngfile;
                 }
-                if (!ResizeImage(image_path, 256, "png", pngfile))
+                if (!ResizeImage(image_path, 256, ImageFormat.PNG, pngfile))
                 {
                     return false;
                 }
@@ -607,7 +596,7 @@ namespace C3Tools
 
                 if (!image_path.EndsWith(".dds", StringComparison.Ordinal)) //allow for .dds input image for superior quality
                 {
-                    if (!ResizeImage(image_path, TextureSize, "tga", tgafile))
+                    if (!ResizeImage(image_path, TextureSize, ImageFormat.TGA, tgafile))
                     {
                         return false;
                     }
@@ -771,89 +760,88 @@ namespace C3Tools
             return ConvertImagetoRB(image_path, image_path, delete_original);
         }
 
+        public enum ImageFormat
+        {
+            BMP, JPG, TIF, TGA, PNG
+        }
+
         /// <summary>
-        /// Use to resize images up or down or convert across BMP/JPG/PNG/TIF
+        /// Use to resize images up or down or convert across BMP/JPG/PNG/TIF.
+        /// Reads in the image file, scales it (bilinear), then outputs using given format.
+        /// Supported input formats: BMP, JPG, PNG, TIF.
+        /// Supported output formats: BMP, JPG/JPEG, TIF, TGA, PNG.
         /// </summary>
         /// <param name="image_path">Full file path to source image</param>
         /// <param name="image_size">Integer for image size, can be smaller or bigger than source image</param>
         /// <param name="format">Format to save the image in: BMP | JPG | TIF | PNG (default)</param>
         /// <param name="output_path">Full file path to output image</param>
-        /// <returns></returns>
-        public bool ResizeImage(string image_path, int image_size, string format, string output_path)
+        /// <returns>false if an error occurred during processing, true otherwise.</returns>
+        public bool ResizeImage(string image_path, int image_size, ImageFormat format, string output_path)
         {
+            // load original image
+            Bitmap oldBmp;
+
             try
             {
-                var newimage = Path.GetDirectoryName(output_path) + "\\" + Path.GetFileNameWithoutExtension(output_path);
-
-                Il.ilInit();
-                Ilu.iluInit();
-
-                var imageId = new int[10];
-
-                // Generate the main image name to use
-                Il.ilGenImages(1, imageId);
-
-                // Bind this image name
-                Il.ilBindImage(imageId[0]);
-
-                // Loads the image into the imageId
-                if (!Il.ilLoadImage(image_path))
-                {
-                    return false;
-                }
-                // Enable overwriting destination file
-                Il.ilEnable(Il.IL_FILE_OVERWRITE);
-
-                var height = isHorizontalTexture ? image_size / TextureDivider : image_size;
-                var width = isVerticalTexture ? image_size / TextureDivider : image_size;
-
-                //assume we're downscaling, this is better filter
-                const int scaler = Ilu.ILU_BILINEAR;
-
-                //resize image
-                Ilu.iluImageParameter(Ilu.ILU_FILTER, scaler);
-                Ilu.iluScale(width, height, 1);
-
-                if (format.ToLowerInvariant().Contains("bmp"))
-                {
-                    //disable compression
-                    Il.ilSetInteger(Il.IL_BMP_RLE, 0);
-                    newimage = newimage + ".bmp";
-                }
-                else if (format.ToLowerInvariant().Contains("jpg") || format.ToLowerInvariant().Contains("jpeg"))
-                {
-                    Il.ilSetInteger(Il.IL_JPG_QUALITY, 99);
-                    newimage = newimage + ".jpg";
-                }
-                else if (format.ToLowerInvariant().Contains("tif"))
-                {
-                    newimage = newimage + ".tif";
-                }
-                else if (format.ToLowerInvariant().Contains("tga"))
-                {
-                    Il.ilSetInteger(Il.IL_TGA_RLE, 0);
-                    newimage = newimage + ".tga";
-                }
-                else
-                {
-                    Il.ilSetInteger(Il.IL_PNG_INTERLACE, 0);
-                    newimage = newimage + ".png";
-                }
-
-                if (!Il.ilSaveImage(newimage))
-                {
-                    return false;
-                }
-
-                // Done with the imageId, so let's delete it
-                Il.ilDeleteImages(1, imageId);
-
-                return File.Exists(newimage);
+                oldBmp = new Bitmap(image_path);
             }
-            catch (Exception)
+            catch (FileNotFoundException)
             {
                 return false;
             }
+
+            Rectangle newRect = new Rectangle
+            {
+                X = 0,
+                Y = 0,
+                Width = isVerticalTexture ? image_size / TextureDivider : image_size,
+                Height = isHorizontalTexture ? image_size / TextureDivider : image_size
+            };
+
+            Bitmap newBmp = new Bitmap(newRect.Width, newRect.Height);
+
+            using (var graphics = Graphics.FromImage(newBmp))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.Bilinear;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(oldBmp, newRect, 0, 0, oldBmp.Width, oldBmp.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+            
+            var outputBasename = Path.GetFileNameWithoutExtension(output_path);
+            var outputPath = Path.Combine(Path.GetDirectoryName(output_path), outputBasename);
+
+            // write output image to outputPath, overwriting existing
+            switch (format)
+            {
+                case ImageFormat.BMP:
+                    break;
+                case ImageFormat.JPG:
+                    break;
+                case ImageFormat.TIF:
+                    break;
+                case ImageFormat.TGA:
+                    // TODO
+                    throw new Exception("rewritten image method doesn't support saving tga");
+                case ImageFormat.PNG:
+                    break;
+            }
+            
+            newBmp.Save(outputPath);
+
+            // jpeg quality: 99
+            // bmp rle: 0
+            // tga rle: 0
+            // png interlace: 0
+
+            return File.Exists(outputPath);
         }
 
         /// <summary>
@@ -863,24 +851,9 @@ namespace C3Tools
         /// <param name="image_size">Integer for image size, can be smaller or bigger than source image</param>
         /// <param name="format">Format to save the image in: BMP | JPG | PNG (default)</param>
         /// <returns></returns>
-        public bool ResizeImage(string image_path, int image_size, string format)
+        public bool ResizeImage(string image_path, int image_size, ImageFormat format)
         {
             return ResizeImage(image_path, image_size, format, image_path);
-        }
-
-        /// <summary>
-        /// Use to resize images up or down or convert across BMP/JPG/PNG
-        /// </summary>
-        /// <param name="image_path">Full file path to source image</param>
-        /// <param name="image_size">Integer for image size, can be smaller or bigger than source image</param>
-        /// <returns></returns>
-        public bool ResizeImage(string image_path, int image_size)
-        {
-            var img = NemoLoadImage(image_path);
-            var format = img.RawFormat.ToString();
-            img.Dispose();
-
-            return ResizeImage(image_path, image_size, format);
         }
 
         /// <summary>
@@ -1120,7 +1093,7 @@ namespace C3Tools
         /// <param name="format">Allowed formats: BMP | JPG | PNG (default)</param>
         /// <param name="delete_original">True: delete | False: keep (default)</param>
         /// <returns></returns>
-        public bool ConvertRBImage(string rb_image, string output_path, string format, bool delete_original)
+        public bool ConvertRBImage(string rb_image, string output_path, ImageFormat format = ImageFormat.PNG, bool delete_original = false)
         {
             var ddsfile = Path.GetDirectoryName(output_path) + "\\" + Path.GetFileNameWithoutExtension(output_path) + ".dds";
             var tgafile = ddsfile.Replace(".dds", ".tga");
@@ -1209,97 +1182,35 @@ namespace C3Tools
                 //read raw dds bytes
                 ddsbytes = File.ReadAllBytes(ddsfile);
 
+                uint width;
+                uint height;
+
                 //grab relevant part of dds header
-                var header_stream = new MemoryStream(ddsbytes, 0, 32);
-                var size = new byte[32];
-                header_stream.Read(size, 0, 32);
-                header_stream.Dispose();
-
-                //default to 256x256
-                var width = 256;
-                var height = 256;
-
-                //get dds dimensions from header
-                switch (size[17]) //width byte
+                using (MemoryStream mem = new MemoryStream(ddsbytes, 0, 32))
+                using (BinaryReader reader = new BinaryReader(mem))
                 {
-                    case 0x00:
-                        switch (size[16])
-                        {
-                            case 0x08:
-                                width = 8;
-                                break;
-                            case 0x10:
-                                width = 16;
-                                break;
-                            case 0x20:
-                                width = 32;
-                                break;
-                            case 0x40:
-                                width = 64;
-                                break;
-                            case 0x80:
-                                width = 128;
-                                break;
-                        }
-                        break;
-                    case 0x02:
-                        width = 512;
-                        break;
-                    case 0x04:
-                        width = 1024;
-                        break;
-                    case 0x08:
-                        width = 2048;
-                        break;
-                }
-                switch (size[13]) //height byte
-                {
-                    case 0x00:
-                        switch (size[12])
-                        {
-                            case 0x08:
-                                height = 8;
-                                break;
-                            case 0x10:
-                                height = 16;
-                                break;
-                            case 0x20:
-                                height = 32;
-                                break;
-                            case 0x40:
-                                height = 64;
-                                break;
-                            case 0x80:
-                                height = 128;
-                                break;
-                        }
-                        break;
-                    case 0x02:
-                        height = 512;
-                        break;
-                    case 0x04:
-                        height = 1024;
-                        break;
-                    case 0x08:
-                        height = 2048;
-                        break;
+                    reader.ReadUInt32();
+                    reader.ReadUInt32();
+                    reader.ReadUInt32();
+                    height = reader.ReadUInt32();
+                    width = reader.ReadUInt32();
                 }
 
                 if (width > height)
                 {
                     isHorizontalTexture = true;
-                    TextureDivider = width / height;
-                    TextureSize = width;
+                    TextureDivider = (int)(width / height);
+                    TextureSize = (int)width;
                 }
                 else if (height > width)
                 {
                     isVerticalTexture = true;
-                    TextureDivider = height / width;
-                    TextureSize = height;
+                    TextureDivider = (int)(height / width);
+                    TextureSize = (int)height;
                 }
                 else
                 {
-                    TextureSize = width;
+                    TextureSize = (int)width;
                 }
 
                 var arg = "\"" + ddsfile + "\"";
@@ -1324,11 +1235,11 @@ namespace C3Tools
                     DeleteFile(tgafile);
                     return false;
                 }
-                if (!rb_image.EndsWith(".dds", StringComparison.Ordinal) && !KeepDDS)
+                if (Path.GetExtension(rb_image) != "dds" && !KeepDDS)
                 {
                     DeleteFile(ddsfile);
                 }
-                if (!format.ToLowerInvariant().Contains("tga"))
+                if (format != ImageFormat.TGA)
                 {
                     DeleteFile(tgafile);
                 }
@@ -1340,7 +1251,7 @@ namespace C3Tools
             }
             catch (Exception)
             {
-                if (!rb_image.EndsWith(".dds", StringComparison.Ordinal))
+                if (Path.GetExtension(rb_image) != "dds")
                 {
                     DeleteFile(ddsfile);
                 }
@@ -1352,44 +1263,10 @@ namespace C3Tools
         /// Converts png_xbox files to usable format
         /// </summary>
         /// <param name="rb_image">Full path to the png_xbox / png_ps3 / dds file</param>
-        /// <param name="output_path">Full path you'd like to save the converted image</param>
-        /// <param name="format">Allowed formats: BMP | JPG | PNG (default)</param>
-        /// <returns></returns>
-        public bool ConvertRBImage(string rb_image, string output_path, string format)
-        {
-            return ConvertRBImage(rb_image, output_path, format, false);
-        }
-
-        /// <summary>
-        /// Converts png_xbox files to usable format
-        /// </summary>
-        /// <param name="rb_image">Full path to the png_xbox / png_ps3 / dds file</param>
-        /// <param name="output_path">Full path you'd like to save the converted image</param>
-        /// <returns></returns>
-        public bool ConvertRBImage(string rb_image, string output_path)
-        {
-            return ConvertRBImage(rb_image, output_path, "png", false);
-        }
-
-        /// <summary>
-        /// Converts png_xbox files to usable format
-        /// </summary>
-        /// <param name="rb_image">Full path to the png_xbox / png_ps3 / dds file</param>
         /// <returns></returns>
         public bool ConvertRBImage(string rb_image)
         {
-            return ConvertRBImage(rb_image, rb_image, "png", false);
-        }
-
-        /// <summary>
-        /// Converts png_xbox files to usable format
-        /// </summary>
-        /// <param name="rb_image">Full path to the png_xbox / png_ps3 / dds file</param>
-        /// <param name="delete_original">True - delete | False - keep (default)</param>
-        /// <returns></returns>
-        public bool ConvertRBImage(string rb_image, bool delete_original)
-        {
-            return ConvertRBImage(rb_image, rb_image, "png", delete_original);
+            return ConvertRBImage(rb_image, rb_image);
         }
         #endregion
 

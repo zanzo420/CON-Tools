@@ -311,7 +311,7 @@ namespace C3Tools
                     return;
                 }
                 var newimage = Path.GetTempPath() + Path.GetFileNameWithoutExtension(contentImage) + ".png";
-                Tools.ResizeImage(contentImage, 64, "png", newimage);
+                Tools.ResizeImage(contentImage, 64, NemoTools.ImageFormat.PNG, newimage);
                 if (File.Exists(newimage))
                 {
                     box.Image = Tools.NemoLoadImage(newimage);

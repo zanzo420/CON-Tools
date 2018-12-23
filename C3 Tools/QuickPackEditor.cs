@@ -835,7 +835,7 @@ namespace C3Tools
                 }
 
                 var newimage = tempfolder + Path.GetFileNameWithoutExtension(contentImage) + ".png";
-                Tools.ResizeImage(contentImage, 64, "png", newimage);
+                Tools.ResizeImage(contentImage, 64, NemoTools.ImageFormat.PNG, newimage);
 
                 if (File.Exists(newimage))
                 {
@@ -1037,8 +1037,8 @@ namespace C3Tools
                         var albumart = songsfolder + song.InternalName + "\\gen\\" + song.InternalName + "_keep.png_xbox";
                         if (useSongAlbumArt.Checked && File.Exists(albumart))
                         {
-                            thumbnail = Tools.ConvertRBImage(albumart, thumbnail, "png") ? thumbnail : "";
-                            thumbnail = Tools.ResizeImage(thumbnail, 64, "png") ? thumbnail : "";
+                            thumbnail = Tools.ConvertRBImage(albumart, thumbnail, NemoTools.ImageFormat.PNG) ? thumbnail : "";
+                            thumbnail = Tools.ResizeImage(thumbnail, 64, NemoTools.ImageFormat.PNG) ? thumbnail : "";
                         }
 
                         if (FinishRepackage(song.Artist + " - " + song.Name, "dePACKed with C3 CON Tools from pack '" + title + "'", true, thumbnail, outputfolder + songname))

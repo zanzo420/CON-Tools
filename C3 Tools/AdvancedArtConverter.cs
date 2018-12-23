@@ -309,15 +309,15 @@ namespace C3Tools
             // Save the image
             if (chkWiiBMP.Checked)
             {
-                success = Tools.ConvertWiiImage(image, image, "bmp", false);
+                success = Tools.ConvertWiiImage(image, image, NemoTools.ImageFormat.BMP, false);
             }
             if (chkWiiJPG.Checked)
             {
-                success = Tools.ConvertWiiImage(image, image, "jpg", false);
+                success = Tools.ConvertWiiImage(image, image, NemoTools.ImageFormat.JPG, false);
             }
             if (chkWiiPNG.Checked)
             {
-                success = Tools.ConvertWiiImage(image, image, "png", false);
+                success = Tools.ConvertWiiImage(image, image, NemoTools.ImageFormat.PNG, false);
             }
 
             if (success)
@@ -347,15 +347,15 @@ namespace C3Tools
             // Save the image
             if (chkPS3BMP.Checked)
             {
-                success = Tools.ConvertRBImage(image, image, "bmp");
+                success = Tools.ConvertRBImage(image, image, NemoTools.ImageFormat.BMP);
             }
             if (chkPS3PNG.Checked)
             {
-                success = Tools.ConvertRBImage(image, image, "png");
+                success = Tools.ConvertRBImage(image, image, NemoTools.ImageFormat.PNG);
             }
             if (chkPS3JPG.Checked)
             {
-                success = Tools.ConvertRBImage(image, image, "jpg");
+                success = Tools.ConvertRBImage(image, image, NemoTools.ImageFormat.JPG);
             }
 
             if (success)
@@ -386,15 +386,15 @@ namespace C3Tools
             // Save the image
             if (chkXboxBMP.Checked)
             {
-                success = Tools.ConvertRBImage(image, image, "bmp");
+                success = Tools.ConvertRBImage(image, image, NemoTools.ImageFormat.BMP);
             }
             if (chkXboxPNG.Checked)
             {
-                success = Tools.ConvertRBImage(image, image, "png");
+                success = Tools.ConvertRBImage(image, image, NemoTools.ImageFormat.PNG);
             }
             if (chkXboxJPG.Checked)
             {
-                success = Tools.ConvertRBImage(image, image, "jpg");
+                success = Tools.ConvertRBImage(image, image, NemoTools.ImageFormat.JPG);
             }
             
             if (success)
@@ -631,14 +631,14 @@ namespace C3Tools
             {
                 if (!File.Exists(milo)) continue;
 
-                var format = "png";
+                NemoTools.ImageFormat format = NemoTools.ImageFormat.PNG;
                 if (chkXboxBMP.Checked)
                 {
-                    format = "bmp";
+                    format = NemoTools.ImageFormat.BMP;
                 }
                 if (chkXboxJPG.Checked)
                 {
-                    format = "jpg";
+                    format = NemoTools.ImageFormat.JPG;
                 }
 
                 Log("Searching .milo_ps3 file for textures");
@@ -683,14 +683,14 @@ namespace C3Tools
             {
                 if (!File.Exists(milo)) continue;
                 
-                var format = "png";
+                NemoTools.ImageFormat format = NemoTools.ImageFormat.PNG;
                 if (chkXboxBMP.Checked)
                 {
-                    format = "bmp";
+                    format = NemoTools.ImageFormat.BMP;
                 }
                 if (chkXboxJPG.Checked)
                 {
-                    format = "jpg";
+                    format = NemoTools.ImageFormat.JPG;
                 }
                 Log("Searching .milo_xbox file for textures");
                 Log(" - " + Path.GetFileName(milo));

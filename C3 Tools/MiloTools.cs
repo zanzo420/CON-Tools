@@ -20,7 +20,7 @@ namespace C3Tools
         /// <param name="saveTEX">Save TEX?</param>
         /// <param name="format">Format to output the images to</param>
         /// <param name="outTexCount">Number of textures in Milo file</param>
-        public static void ExtractTextures(string inMilo, bool saveDDS, bool saveTEX, string format, out int outTexCount)
+        public static void ExtractTextures(string inMilo, bool saveDDS, bool saveTEX, NemoTools.ImageFormat format, out int outTexCount)
         {
             var texCount = 0;
             var Tools = new NemoTools();
@@ -65,10 +65,7 @@ namespace C3Tools
                 var ddsfiles = Directory.GetFiles(TexturesFolder, "*.dds");
                 foreach (var dds in ddsfiles)
                 {
-                    if (!string.IsNullOrWhiteSpace(format))
-                    {
-                        Tools.ConvertRBImage(dds, dds, format);
-                    }
+                    Tools.ConvertRBImage(dds, dds, format);
                     if (!saveDDS)
                     {
                         Tools.DeleteFile(dds);
