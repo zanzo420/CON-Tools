@@ -2282,12 +2282,9 @@ namespace C3Tools
         #region Mogg Stuff
         public void ReleaseStreamHandle()
         {
-            try
-            {
-                PlayingOggStreamHandle.Free();
-            }
-            catch (Exception)
-            {}
+	        if (PlayingOggStreamHandle.IsAllocated) {
+		        PlayingOggStreamHandle.Free();
+	        }
         }
 
         public IntPtr GetOggStreamIntPtr()
@@ -2363,8 +2360,7 @@ namespace C3Tools
 	        if (!flag)
 		        return false;
 
-	        // TODO
-//	        this.someEncryptorResult = encryptor.getSomeArray();
+			PlayingSongOggData = encryptor.getSomeArray();
 
 	        return true;
         }

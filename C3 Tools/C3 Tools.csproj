@@ -80,8 +80,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Bass.Net, Version=2.4.12.3, Culture=neutral, PublicKeyToken=b7566c273e6ef480">
-      <HintPath>..\packages\Bass.NetWrapper.2.4.12.5\lib\net40\Bass.Net.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Bass.NetWrapper.2.4.12.5\lib\net45\Bass.Net.dll</HintPath>
     </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.8.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17">
       <HintPath>..\packages\DocumentFormat.OpenXml.2.8.1\lib\net40\DocumentFormat.OpenXml.dll</HintPath>

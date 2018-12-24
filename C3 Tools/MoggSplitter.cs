@@ -129,12 +129,14 @@ namespace C3Tools
                 var output_file = output;
                 if (string.IsNullOrWhiteSpace(output))
                 {
-                    output_file = Path.GetDirectoryName(CON_file) + "\\" + Parser.Songs[0].InternalName + (format == MoggSplitFormat.WAV ? ".wav" : ".ogg");
+                    output_file = Path.Combine(Path.GetDirectoryName(CON_file), Parser.Songs[0].InternalName + (format == MoggSplitFormat.WAV ? ".wav" : ".ogg"));
                 }
                 if (format == MoggSplitFormat.OGG)
                 {
-                    var cmd = "bin\\oggenc2.exe -q" + quality + " - -o\"" + output_file + "\"";
-                    BassEnc.BASS_Encode_Start(BassMixer, cmd, BASSEncode.BASS_ENCODE_FP_24BIT | BASSEncode.BASS_ENCODE_AUTOFREE, null, IntPtr.Zero);
+	                // TODO
+	                throw new NotImplementedException();
+//                    var cmd = "bin\\oggenc2.exe -q" + quality + " - -o\"" + output_file + "\"";
+//                    BassEnc.BASS_Encode_Start(BassMixer, cmd, BASSEncode.BASS_ENCODE_FP_24BIT | BASSEncode.BASS_ENCODE_AUTOFREE, null, IntPtr.Zero);
                 }
                 else
                 {
@@ -264,18 +266,18 @@ namespace C3Tools
             {
                 Directory.CreateDirectory(folder);
             }
-            var drums = folder + "drums." + ext;
-            var drums1 = folder + "drums_1." + ext;
-            var drums2 = folder + "drums_2." + ext;
-            var drums3 = folder + "drums_3." + ext;
-            var bass = folder + "bass." + ext;
-            var rhythm = folder + "rhythm." + ext;
-            var guitar = folder + "guitar." + ext;
-            var keys = folder + "keys." + ext;
-            var vocals = folder + "vocals." + ext;
-            var backing = folder + "backing." + ext;
-            var song = folder + "song." + ext;
-            var crowd = folder + "crowd." + ext;
+            var drums = Path.Combine(folder, "drums." + ext);
+            var drums1 = Path.Combine(folder, "drums_1." + ext);
+            var drums2 = Path.Combine(folder, "drums_2." + ext);
+            var drums3 = Path.Combine(folder, "drums_3." + ext);
+            var bass = Path.Combine(folder, "bass." + ext);
+            var rhythm = Path.Combine(folder, "rhythm." + ext);
+            var guitar = Path.Combine(folder, "guitar." + ext);
+            var keys = Path.Combine(folder, "keys." + ext);
+            var vocals = Path.Combine(folder, "vocals." + ext);
+            var backing = Path.Combine(folder, "backing." + ext);
+            var song = Path.Combine(folder, "song." + ext);
+            var crowd = Path.Combine(folder, "crowd." + ext);
             var tracks = new List<string> { drums, drums1, drums2, drums3, bass, guitar, keys, vocals, backing, crowd };
             foreach (var track in tracks)
             {
@@ -286,7 +288,7 @@ namespace C3Tools
                 if (!InitBass()) return false;
                 SourceStream = Bass.BASS_StreamCreateFile(Tools.GetOggStreamIntPtr(), 0, Tools.PlayingSongOggData.Length, BASSFlag.BASS_STREAM_DECODE);
                 var info = Bass.BASS_ChannelGetInfo(SourceStream);
-                var ArrangedChannels = ArrangeStreamChannels(info.chans, true);
+                var ArrangedChannels = ArrangeStreamChannels(info.chans, format == MoggSplitFormat.OGG);
                 var isSlave = false;
                 if (Parser.Songs[0].ChannelsDrums > 0 && (StemsToSplit.Contains("allstems") || StemsToSplit.Contains("drums")))
                 {
@@ -401,8 +403,10 @@ namespace C3Tools
             Splits.Add(out_stream);
             if (format == MoggSplitFormat.OGG)
             {
-                var cmd = "bin\\oggenc2.exe -q" + quality + " - -o\"" + file + "\"";
-                BassEnc.BASS_Encode_Start(out_stream, cmd, BASSEncode.BASS_ENCODE_FP_24BIT | BASSEncode.BASS_ENCODE_AUTOFREE, null, IntPtr.Zero);
+	            // TODO
+	            throw new NotImplementedException();
+//                var cmd = "bin\\oggenc2.exe -q" + quality + " - -o\"" + file + "\"";
+//                BassEnc.BASS_Encode_Start(out_stream, cmd, BASSEncode.BASS_ENCODE_FP_24BIT | BASSEncode.BASS_ENCODE_AUTOFREE, null, IntPtr.Zero);
             }
             else
             {

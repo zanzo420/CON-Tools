@@ -462,13 +462,13 @@ namespace C3Tools
 
             return true;
         }
-        
+
         private void SeparateAudio(string CON, string mogg, string folder)
         {
             if (backgroundWorker1.CancellationPending) return;
             Log("Separating mogg file into its component ogg files");
             var Splitter = new MoggSplitter();
-            var split = Splitter.SplitMogg(CON, folder, "allstems|rhythm|song", MoggSplitter.MoggSplitFormat.OGG, domainQuality.Text);
+            var split = Splitter.SplitMogg(CON, folder, "allstems|rhythm|song", MoggSplitter.MoggSplitFormat.WAV, domainQuality.Text);
             if (!split)
             {
                 foreach (var error in Splitter.ErrorLog)
@@ -485,7 +485,8 @@ namespace C3Tools
         private void FinishAudioSeparation(string mogg, string folder)
         {
             var oggs = Directory.GetFiles(folder, "*.ogg");
-            if (!oggs.Any())
+            var wavs = Directory.GetFiles(folder, "*.wav");
+            if (!oggs.Any() && !wavs.Any())
             {
                 Log("Failed");
                 return;
@@ -493,6 +494,7 @@ namespace C3Tools
             Log("Success");
             Tools.DeleteFile(mogg);
             AnalyzeOggs(oggs);
+            AnalyzeOggs(wavs);
             if (!useguitaroggForNonmultitrackSongs.Checked) return;
             oggs = Directory.GetFiles(folder, "*.ogg");
             if (!oggs.Any() || oggs.Count() > 1 || !oggs[0].Contains("song.ogg")) return;
@@ -709,7 +711,7 @@ namespace C3Tools
         {
             if (Tools.IsAuthorized())
             {
-                chkRAR.Checked = true;
+//                chkRAR.Checked = true;
                 if (Tools.IsAuthorized(true))
                 {
                     chkNoC3.Visible = true;
