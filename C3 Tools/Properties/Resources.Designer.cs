@@ -23,11 +23,11 @@ namespace C3Tools.Properties {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
-        
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
-        private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
+        private static global::System.Globalization.CultureInfo resourceCulture = System.Globalization.CultureInfo.InvariantCulture;
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal Resources() {
         }
@@ -56,10 +56,10 @@ namespace C3Tools.Properties {
                 return resourceCulture;
             }
             set {
-                resourceCulture = value;
+//                resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
