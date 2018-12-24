@@ -205,6 +205,7 @@
     <Compile Include="SMDialog.designer.cs">
       <DependentUpon>SMDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="SomeEncryptorStuff.cs" />
     <Compile Include="Updater.cs">
       <SubType>Form</SubType>
     </Compile>

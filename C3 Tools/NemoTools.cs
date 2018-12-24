@@ -20,10 +20,10 @@ namespace C3Tools
     {
         #region Wii Stuff
 
-        // // // // // // // // // // // // // // // 
-        //WII STUFF WII STUFF WII STUFF WII STUFF // 
-        // // // // // // // // // // // // // // // 
-        
+        // // // // // // // // // // // // // // //
+        //WII STUFF WII STUFF WII STUFF WII STUFF //
+        // // // // // // // // // // // // // // //
+
         /// <summary>
         /// Converts png_wii files to usable format
         /// </summary>
@@ -41,7 +41,7 @@ namespace C3Tools
             TextureSize = 128;
 
             DeleteFile(pngfile);
-            
+
             try
             {
                 if (tplfile != wii_image)
@@ -110,7 +110,7 @@ namespace C3Tools
                 var img = TPL.ConvertFromTPL(tplfile);
                 img.Save(pngfile, GetEncoderInfo("image/png"), myEncoderParameters);
                 img.Dispose();
-                
+
                 if (!File.Exists(pngfile))
                 {
                     if (tplfile != wii_image)
@@ -167,7 +167,7 @@ namespace C3Tools
         {
             return ConvertWiiImage(wii_image, output_path,format, false);
         }
-        
+
         /// <summary>
         /// Converts png_wii files to png format
         /// </summary>
@@ -227,13 +227,13 @@ namespace C3Tools
                 {
                     return false;
                 }
-                
+
                 if (File.Exists(wimgt_path))
                 {
                     if (image_path != tplfile)
                     {
                         DeleteFile(tplfile);
-                        
+
                         try
                         {
                             var arg = "-d \"" + tplfile + "\" ENC -x TPL.CMPR \"" + pngfile + "\"";
@@ -390,9 +390,9 @@ namespace C3Tools
             }
         }
 
-        // // // // // // // // // // // // // // // 
-        //WII STUFF WII STUFF WII STUFF WII STUFF // 
-        // // // // // // // // // // // // // // // 
+        // // // // // // // // // // // // // // //
+        //WII STUFF WII STUFF WII STUFF WII STUFF //
+        // // // // // // // // // // // // // // //
         #endregion
 
         #region Declarations
@@ -411,7 +411,7 @@ namespace C3Tools
         private const int FOF_ALLOWUNDO = 0x0040;           // Preserve undo information, if possible.
         private const int FOF_NOCONFIRMATION = 0x0010;      // Show no confirmation dialog box to the user
         public string DDS_Format;
-        
+
         // Struct which contains information that the SHFileOperation function uses to perform file operations.
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
         public struct SHFILEOPSTRUCT
@@ -434,45 +434,112 @@ namespace C3Tools
 
         #region C3 Password Stuff
 
-        public bool HasCorrectPassword(string authFile, string authPassword)
-        {
-            //REDACTED BY TROJANNEMO
-            return false;
+        public bool HasCorrectPassword(string authFile, string authPassword) {
+	        return true;
+//	        if (!System.IO.File.Exists(authFile))
+//		        return false;
+//	        StreamReader streamReader = new StreamReader(authFile);
+//	        string str = streamReader.ReadLine();
+//	        streamReader.Dispose();
+//	        if (string.IsNullOrWhiteSpace(str))
+//		        return false;
+//	        for (int index = 0; index < str.Length; ++index)
+//	        {
+//		        char[] charArray = str.ToCharArray();
+//		        charArray[index] = (char) ((uint) charArray[index] - (uint) str.Length);
+//		        str = new string(charArray);
+//	        }
+//	        return str == authPassword;
         }
 
         public bool IsAuthorized(bool doCrypt = false)
         {
-            //REDACTED BY TROJANNEMO
-            return false;
+	        // TODO: can I just comment this out and return true?
+	        return true;
+//	        string authFile = Path.Combine(Application.StartupPath, "bin", doCrypt ? "auth2" : "auth1");
+//	        string authPassword = doCrypt
+//		        ? "ÙÒøäúëæÍÆÙ°ÔòÔÎÆÄ°µ\x00BDÏ´ª×Ö¦Âªìé\x00B9ÁÆòåùîáéÒÏßÁê±ÃçÃÐÁ\x00B2îæçëçêççÒçã×óáÞðÁò£È÷Ë\x00B2¿ìÌ×¿×øÈÔÈÙ¤ÍÙÕ±ù±ñÀ\x00BDÙ\x00BDÍËÇÒô¦ñÊ¥·Àô÷ÃÉîç¦Èæ\x00B9ãÉï¸ªõâÑëÂ"
+//		        : "¸v\x0088µ\x0090£§\x00B2\x0083\x00B3q¯\x0083\x008F·\x00B9¤¨\x008C\x008C\x0094\x00B3t«\x0086vs\x0097\x0098¬x¤\x0099\x008D¶¸\x00B2\x0096s§u\x008Bv\x0087¥¬\x0095º\x0099¢£\x0081\x0096\x0091£¬\x009A\x0083\x0097\x0088¥\x00AD¤¢";
+//	        return HasCorrectPassword(authFile, authPassword);
         }
 
-        public bool HasMasterPassword()
-        {
-            //REDACTED BY TROJANNEMO
-            return false;
+        public bool HasMasterPassword() {
+	        // TODO: can I just comment this out and return true?
+	        return true;
+//	        string authFile = Path.Combine(Application.StartupPath, "bin/auth3");
+//	        string masterPassword =
+//		        "űĤőĸŁĲĦĿŹůťŞżŶĸĲŏĴŸŌĸĳĹŰŌŘŉĸĽĽţŧŭŭŞŁŨœřŹūŮŎĦĪŶŔŬůŔĤĲŪŏťŲŭŋŘĥŨŊİũŭŞġőńĴŖŞŏŀźŢůŴŃŏŅŧŁŶŞĤĹŗĥŕŚŰšŞŚĪťĦņīİŀŐŸġūŸķŀņņņŐŮĤĹŐŉųŇŏķņŘĭıŅŏũĤŲŵņŐŷĭŬņűŰŖżŏŦŘłŸŉŏīōĥũŪŢūŷŐĥŪŋŘŮřŤŘŰĪšŶŃĸŁŶŤŉĸųĥŨĹŌŭŶŰŬŗŧĵĥŎŇŉŞŐżŨŰĹŸŔŗŨģœĳĽńřĳŖĿģŴŬŞĭŗģĦŖĴġłĸłšĤŲĥŹŤŉŶıűşŧĽĤŋīņōĶĦŲĿŘşŚţĹŹŋŀ";
+//            return HasCorrectPassword(authFile, masterPassword);
         }
 
         public void SaveC3Password(string password)
         {
-            //REDACTED BY TROJANNEMO
+//	        string str1;
+//	        switch (password)
+//	        {
+//	        case "¸v\x0088µ\x0090£§\x00B2\x0083\x00B3q¯\x0083\x008F·\x00B9¤¨\x008C\x008C\x0094\x00B3t«\x0086vs\x0097\x0098¬x¤\x0099\x008D¶¸\x00B2\x0096s§u\x008Bv\x0087¥¬\x0095º\x0099¢£\x0081\x0096\x0091£¬\x009A\x0083\x0097\x0088¥\x00AD¤¢":
+//		        str1 = "auth1";
+//		        break;
+//	        case "ÙÒøäúëæÍÆÙ°ÔòÔÎÆÄ°µ\x00BDÏ´ª×Ö¦Âªìé\x00B9ÁÆòåùîáéÒÏßÁê±ÃçÃÐÁ\x00B2îæçëçêççÒçã×óáÞðÁò£È÷Ë\x00B2¿ìÌ×¿×øÈÔÈÙ¤ÍÙÕ±ù±ñÀ\x00BDÙ\x00BDÍËÇÒô¦ñÊ¥·Àô÷ÃÉîç¦Èæ\x00B9ãÉï¸ªõâÑëÂ":
+//		        str1 = "auth2";
+//		        break;
+//	        case "űĤőĸŁĲĦĿŹůťŞżŶĸĲŏĴŸŌĸĳĹŰŌŘŉĸĽĽţŧŭŭŞŁŨœřŹūŮŎĦĪŶŔŬůŔĤĲŪŏťŲŭŋŘĥŨŊİũŭŞġőńĴŖŞŏŀźŢůŴŃŏŅŧŁŶŞĤĹŗĥŕŚŰšŞŚĪťĦņīİŀŐŸġūŸķŀņņņŐŮĤĹŐŉųŇŏķņŘĭıŅŏũĤŲŵņŐŷĭŬņűŰŖżŏŦŘłŸŉŏīōĥũŪŢūŷŐĥŪŋŘŮřŤŘŰĪšŶŃĸŁŶŤŉĸųĥŨĹŌŭŶŰŬŗŧĵĥŎŇŉŞŐżŨŰĹŸŔŗŨģœĳĽńřĳŖĿģŴŬŞĭŗģĦŖĴġłĸłšĤŲĥŹŤŉŶıűşŧĽĤŋīņōĶĦŲĿŘşŚţĹŹŋŀ":
+//		        str1 = "auth3";
+//		        break;
+//	        default:
+//		        return;
+//	        }
+//	        string path = Path.Combine(Application.StartupPath, "bin", str1);
+//	        string str2 = this.EncryptC3Password(password);
+//	        StreamWriter streamWriter = new StreamWriter(path, false);
+//	        streamWriter.Write(str2);
+//	        streamWriter.Dispose();
         }
 
         public string EncryptC3Password(string password)
         {
-            //REDACTED BY TROJANNEMO
-            return password;
+	        string str = password;
+	        for (int index = 0; index < str.Length; ++index)
+	        {
+		        char[] charArray = str.ToCharArray();
+		        charArray[index] = (char) ((uint) charArray[index] + (uint) str.Length);
+		        str = new string(charArray);
+	        }
+	        return str;
         }
 
-        public bool ConfirmPasswordMatches(string pass, bool doCrypt = false)
-        {
-            //REDACTED BY TROJANNEMO
-            return false;
+        public bool ConfirmPasswordMatches(string pass, bool doCrypt = false) {
+	        return true;
+//	        string str = this.EncryptC3Password(pass);
+//	        return doCrypt
+//		        ? str == "ÙÒøäúëæÍÆÙ°ÔòÔÎÆÄ°µ\x00BDÏ´ª×Ö¦Âªìé\x00B9ÁÆòåùîáéÒÏßÁê±ÃçÃÐÁ\x00B2îæçëçêççÒçã×óáÞðÁò£È÷Ë\x00B2¿ìÌ×¿×øÈÔÈÙ¤ÍÙÕ±ù±ñÀ\x00BDÙ\x00BDÍËÇÒô¦ñÊ¥·Àô÷ÃÉîç¦Èæ\x00B9ãÉï¸ªõâÑëÂ"
+//		        : str == "¸v\x0088µ\x0090£§\x00B2\x0083\x00B3q¯\x0083\x008F·\x00B9¤¨\x008C\x008C\x0094\x00B3t«\x0086vs\x0097\x0098¬x¤\x0099\x008D¶¸\x00B2\x0096s§u\x008Bv\x0087¥¬\x0095º\x0099¢£\x0081\x0096\x0091£¬\x009A\x0083\x0097\x0088¥\x00AD¤¢"
+//		          || str == "űĤőĸŁĲĦĿŹůťŞżŶĸĲŏĴŸŌĸĳĹŰŌŘŉĸĽĽţŧŭŭŞŁŨœřŹūŮŎĦĪŶŔŬůŔĤĲŪŏťŲŭŋŘĥŨŊİũŭŞġőńĴŖŞŏŀźŢůŴŃŏŅŧŁŶŞĤĹŗĥŕŚŰšŞŚĪťĦņīİŀŐŸġūŸķŀņņņŐŮĤĹŐŉųŇŏķņŘĭıŅŏũĤŲŵņŐŷĭŬņűŰŖżŏŦŘłŸŉŏīōĥũŪŢūŷŐĥŪŋŘŮřŤŘŰĪšŶŃĸŁŶŤŉĸųĥŨĹŌŭŶŰŬŗŧĵĥŎŇŉŞŐżŨŰĹŸŔŗŨģœĳĽńřĳŖĿģŴŬŞĭŗģĦŖĴġłĸłšĤŲĥŹŤŉŶıűşŧĽĤŋīņōĶĦŲĿŘşŚţĹŹŋŀ"
+//		          || str == "ÙÒøäúëæÍÆÙ°ÔòÔÎÆÄ°µ\x00BDÏ´ª×Ö¦Âªìé\x00B9ÁÆòåùîáéÒÏßÁê±ÃçÃÐÁ\x00B2îæçëçêççÒçã×óáÞðÁò£È÷Ë\x00B2¿ìÌ×¿×øÈÔÈÙ¤ÍÙÕ±ù±ñÀ\x00BDÙ\x00BDÍËÇÒô¦ñÊ¥·Àô÷ÃÉîç¦Èæ\x00B9ãÉï¸ªõâÑëÂ";
         }
 
-        public bool GetPassword(bool doCrypt = false)
-        {
-            //REDACTED BY TROJANNEMO
-            return false;
+        public bool GetPassword(bool doCrypt = false) {
+	        string text;
+
+	        using (PasswordUnlocker unlocker = new PasswordUnlocker("")) {
+		        unlocker.ShowDialog();
+		        text = unlocker.EnteredText;
+	        }
+
+	        if (string.IsNullOrWhiteSpace(text.Trim()))
+		        return false;
+
+	        if (!ConfirmPasswordMatches(text, doCrypt))
+	        {
+		        MessageBox.Show("Invalid password", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+		        return false;
+	        }
+
+	        MessageBox.Show("Password accepted", "", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+
+	        SaveC3Password(EncryptC3Password(text));
+
+	        return true;
         }
         #endregion
 
@@ -490,14 +557,10 @@ namespace C3Tools
             return null;
         }
 
-        private const string ClientId = "GET YOUR OWN FROM IMGUR"; //from imgur, specific to this program, do not use elsewhere
+        private const string ClientId = "248d1718f9e6925"; // TODO: configurable API key
+
         public string UploadToImgur(string image)
         {
-            //remove code snippet below once you get your own code from imgur and enter above
-            MessageBox.Show("You tried to upload to Imgur but haven't added your own Imgur code. Sign up for app access with Imgur then go to source code under 'UploadtoImgur' in 'NemoTools.cs' and enter your ClientID there and remove this pop-up message.",
-                "HEY YOU", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            return "";
-            //remove code snippet above once you get your own code from imgur and enter above
             var link = "";
             try
             {
@@ -564,7 +627,7 @@ namespace C3Tools
 
             return img;
         }
-        
+
         /// <summary>
         /// Returns true after successful conversion to png_xbox format
         /// </summary>
@@ -1031,7 +1094,7 @@ namespace C3Tools
             }
             return Color.FromArgb(color.A, (int)red, (int)green, (int)blue);
         }
-        
+
         /// <summary>
         /// Use to quickly grab value on right side of = in C3 options/fix files
         /// </summary>
@@ -1052,7 +1115,7 @@ namespace C3Tools
             }
             return line.Trim();
         }
-        
+
         /// <summary>
         /// Will send files or folders to Recycle Bin rather than delete from hard drive
         /// </summary>
@@ -1068,7 +1131,7 @@ namespace C3Tools
             {
                 if (!File.Exists(path)) return;
             }
-            
+
             try
             {
                 var fileop = new SHFILEOPSTRUCT
@@ -1082,7 +1145,7 @@ namespace C3Tools
             catch (Exception)
             {}
         }
-        
+
         /// <summary>
         /// Will safely try to move, and if fails, copy/delete a file
         /// </summary>
@@ -1239,7 +1302,7 @@ namespace C3Tools
                 return "There was an error while sending to Audacity\nThe error says: " + ex.Message;
             }
         }
-        
+
         /// <summary>
         /// Unlocks STFS package to show as a full song in game
         /// </summary>
@@ -1323,7 +1386,7 @@ namespace C3Tools
             line = line.Replace("E½", "");
             return line;
         }
-        
+
         /// <summary>
         /// Returns byte array in hex value
         /// </summary>
@@ -1338,7 +1401,7 @@ namespace C3Tools
                 xReturn.Add(Convert.ToByte(xIn.Substring(i * 2, 2), 16));
             return xReturn.ToArray();
         }
-        
+
         /// <summary>
         /// Returns true if the package description suggests a pack
         /// </summary>
@@ -1354,7 +1417,7 @@ namespace C3Tools
                    description.Contains("(pro)") || description.Contains("(upgrade)") ||
                    display.Contains("(pro)") || display.Contains("(upgrade)") ||
                    display.Contains("album") || description.Contains("album") ||
-                   display.Contains("export") || description.Contains("export")) && 
+                   display.Contains("export") || description.Contains("export")) &&
                    !description.Contains("depacked") && !display.Contains("depacked");
         }
 
@@ -1406,7 +1469,7 @@ namespace C3Tools
 
             return mystring;
         }
-        
+
         /// <summary>
         /// Exports log to text file
         /// </summary>
@@ -1480,11 +1543,11 @@ namespace C3Tools
                         args += " -r-";
                         break;
                 }
-                
+
                 args += "\"" + OutputPath + "\"";
 
                 args += string.Join(" ", InputPaths.Select(p => "\"" + p + "\""));
-                
+
                 return args;
             }
         }
@@ -1848,7 +1911,7 @@ namespace C3Tools
                 datfile = tempdat;
                 package.CloseIO();
             }
-            
+
             var in_char = image_folder + "character_";
             var in_art = image_folder + "art_";
             var ext = ps3 ? ".png_ps3" : ".png_xbox";
@@ -1887,7 +1950,7 @@ namespace C3Tools
 
                     NAME_OFFSET += NAME_LENGTH + NAME_SPACER;
                 }
-                
+
                 //write all art images
                 var ART_OFFSET = 0x19495B;
                 const int ART_SIZE = 0x10020;
@@ -1962,11 +2025,11 @@ namespace C3Tools
                 return false;
             }
         }
-        
+
         public bool ExtractSaveImages(string savefile, string savepath, bool ps3 = false)
         {
             if (!File.Exists(savefile)) return false;
-            
+
             var savebytes = File.ReadAllBytes(savefile);
             SaveFileCharNames = new List<string>();
 
@@ -1975,7 +2038,7 @@ namespace C3Tools
             {
                 Directory.CreateDirectory(out_folder);
             }
-            
+
             try
             {
                 const int BAND_OFFSET = 0x43A773;
@@ -2007,7 +2070,7 @@ namespace C3Tools
                     if (string.IsNullOrWhiteSpace(name)) break;
                     SaveFileCharNames.Add(name);
                 }
-                
+
                 //grab character images
                 var CHAR_OFFSET = 0x4C07D;
                 const int CHAR_SIZE = 0x20020;
@@ -2024,7 +2087,7 @@ namespace C3Tools
                     var check_bytes = new byte[CHAR_HEADER.Length];
                     save_stream.Read(check_bytes, 0, CHAR_HEADER.Length);
                     save_stream.Dispose();
-                    
+
                     if (!check_bytes.SequenceEqual(CHAR_HEADER))
                     {
                         CHAR_OFFSET += CHAR_SIZE + CHAR_SPACER;
@@ -2043,7 +2106,7 @@ namespace C3Tools
                     File.WriteAllBytes(outfile, img_bytes);
                     RBImageConvert.GameImageFileToBitmap(outfile).Save(outfile, ImageFormat.Png);
                 }
-                
+
                 //grab art images
                 var ART_OFFSET = 0x19495B;
                 const int ART_SIZE = 0x10020;
@@ -2062,7 +2125,7 @@ namespace C3Tools
                     save_stream.Read(check_bytes, 0, ART_HEADER.Length);
                     save_stream.Dispose();
 
-                    
+
                     if (!check_bytes.SequenceEqual(ART_HEADER))
                     {
                         ART_OFFSET += ART_SIZE + ART_SPACER;
@@ -2200,7 +2263,7 @@ namespace C3Tools
                         i = i + ART_SIZE;
                     }
                 }
-                
+
                 var success = char_counter != 0 || art_counter != 0;
                 if (!success)
                 {
@@ -2236,20 +2299,74 @@ namespace C3Tools
 
         public bool EncM(byte[] mData, string mOut, bool doPS3 = false)
         {
-            //REDACTED BY TROJANNEMO
-            return false;
+	        if (this.IsC3Mogg(mData))
+	        {
+		        string str = Path.GetTempPath() + "m";
+		        if (this.DecM(mData, true, true, DecryptMode.ToFile, str))
+		        {
+			        mData = System.IO.File.ReadAllBytes(str);
+			        this.DeleteFile(str);
+		        }
+	        }
+	        if (this.MoggIsEncrypted(mData))
+		        return true;
+	        return new EncryptorThing().EncryptThing(mData, mOut, doPS3);
         }
 
         public bool MoggIsEncrypted(byte[] mData)
         {
-            //REDACTED BY TROJANNEMO
-            return false;
+	        byte[] signature = new byte[4] { 79, 103, 103, 83 };
+	        using (MemoryStream memoryStream = new MemoryStream(mData))
+	        {
+		        using (BinaryReader binaryReader = new BinaryReader(memoryStream))
+		        {
+			        CryptVersion v = (CryptVersion) binaryReader.ReadInt32();
+			        int num = binaryReader.ReadInt32();
+			        binaryReader.BaseStream.Seek(num, SeekOrigin.Begin);
+			        return !binaryReader.ReadBytes(4).SequenceEqual(signature) || v != CryptVersion.x0A;
+		        }
+	        }
         }
 
         public bool DecM(byte[] mData, bool bypass = false, bool keep_header = true, DecryptMode mode = DecryptMode.ToFile, string mOut = "")
         {
-            //REDACTED BY TROJANNEMO
-            return false;
+	        if (!MoggIsEncrypted(mData))
+	        {
+		        if (!keep_header)
+			        RemoveMHeader(mData, mode, mOut);
+		        return true;
+	        }
+
+	        // TODO: always bypass?
+	        if (!bypass && (!IsAuthorized(false) || !IsAuthorized(true)))
+		        return false;
+
+	        mData = DeObfM(mData);
+
+	        CryptVersion cryptVersion;
+
+	        using (BinaryReader binaryReader = new BinaryReader(new MemoryStream(mData)))
+		        cryptVersion = (CryptVersion) binaryReader.ReadInt32();
+
+	        if (!IsRecognizedCryptVersion(cryptVersion))
+		        return false;
+
+	        bool isC3 = IsC3Mogg(mData);
+
+	        EncryptorThing encryptor = new EncryptorThing();
+
+	        bool flag = encryptor.DecryptThing(mData, isC3, keep_header, false, mode, mOut);
+
+	        if (mode == DecryptMode.ToFile)
+		        return flag && File.Exists(mOut);
+
+	        if (!flag)
+		        return false;
+
+	        // TODO
+//	        this.someEncryptorResult = encryptor.getSomeArray();
+
+	        return true;
         }
 
         public void RemoveMHeader(byte[] mData, DecryptMode mode, string mOut)
@@ -2287,28 +2404,300 @@ namespace C3Tools
 
         public bool IsC3Mogg(byte[] mData)
         {
-            //REDACTED BY TROJANNEMO
-            return false;
+	        List<byte[]> c3SignatureList = new List<byte[]>()
+	        {
+		        CryptoHelperGuy.e,
+		        CryptoHelperGuy.f,
+		        CryptoHelperGuy.g,
+		        CryptoHelperGuy.h
+	        };
+
+	        bool isC3 = false;
+
+	        foreach (byte[] numArray in c3SignatureList)
+	        {
+		        using (MemoryStream memoryStream = new MemoryStream(mData))
+		        {
+			        using (BinaryReader binaryReader = new BinaryReader((Stream) memoryStream))
+			        {
+				        if (!IsRecognizedCryptVersion((CryptVersion) binaryReader.ReadInt32()))
+					        return false;
+
+				        // read data from the end of the header of size num and compare to signature
+				        int num = binaryReader.ReadInt32();
+
+				        binaryReader.BaseStream.Seek((num - numArray.Length), SeekOrigin.Begin);
+
+				        if ((binaryReader.ReadBytes(numArray.Length)).SequenceEqual(numArray))
+					        isC3 = true;
+					        break;
+			        }
+		        }
+	        }
+
+	        return isC3;
         }
-        
+
+        private static bool IsRecognizedCryptVersion(CryptVersion A_0)
+        {
+	        return A_0 == CryptVersion.x0B
+	               || A_0 == CryptVersion.x0C
+	               || (A_0 == CryptVersion.x0D || A_0 == CryptVersion.x0E)
+	               || A_0 == CryptVersion.x0F
+	               || A_0 == CryptVersion.x10;
+        }
+
         public byte[] DeObfM(byte[] mData)
         {
-            //REDACTED BY TROJANNEMO
-            return mData;
+	        if (!CheckFirstByteObfuscated(mData))
+		        return mData;
+
+	        byte num1;
+	        int num2;
+	        using (BinaryReader binaryReader = new BinaryReader((Stream) new MemoryStream(mData)))
+	        {
+		        num1 = binaryReader.ReadByte();
+		        binaryReader.ReadBytes(3);
+		        num2 = binaryReader.ReadInt32();
+	        }
+
+	        byte[] buffer;
+	        byte num3;
+
+	        switch ((ObfuscatedMoggNumbers) num1)
+	        {
+	        case ObfuscatedMoggNumbers.f:
+		        buffer = CryptoHelperGuy.g;
+		        num3 = (byte) 16;
+		        break;
+	        case ObfuscatedMoggNumbers.a:
+		        buffer = CryptoHelperGuy.e;
+		        num3 = (byte) 11;
+		        break;
+	        case ObfuscatedMoggNumbers.b:
+		        buffer = CryptoHelperGuy.f;
+		        num3 = (byte) 12;
+		        break;
+	        case ObfuscatedMoggNumbers.c:
+		        buffer = CryptoHelperGuy.g;
+		        num3 = (byte) 13;
+		        break;
+	        case ObfuscatedMoggNumbers.d:
+		        buffer = CryptoHelperGuy.g;
+		        num3 = (byte) 14;
+		        break;
+	        case ObfuscatedMoggNumbers.e:
+		        buffer = CryptoHelperGuy.g;
+		        num3 = (byte) 15;
+		        break;
+	        default:
+		        return mData;
+	        }
+
+	        using (MemoryStream memoryStream = new MemoryStream(mData))
+	        {
+		        using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
+		        {
+			        binaryWriter.Write(num3);
+			        binaryWriter.BaseStream.Seek(num2 - buffer.Length, SeekOrigin.Begin);
+			        binaryWriter.Write(buffer);
+		        }
+	        }
+
+	        return mData;
         }
+
+        private readonly byte[] obfBufferW = new byte[16]
+        {
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195
+        };
+        private readonly byte[] obfBufferX = new byte[72]
+        {
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195,
+	        (byte) 195
+        };
 
         public byte[] ObfM(byte[] mData)
         {
-            //REDACTED BY TROJANNEMO
-            return mData;
+	        if (CheckFirstByteObfuscated(mData) || !IsC3Mogg(mData))
+		        return mData;
+
+	        byte num1;
+	        int num2;
+	        using (BinaryReader binaryReader = new BinaryReader(new MemoryStream(mData)))
+	        {
+		        num1 = binaryReader.ReadByte();
+		        binaryReader.ReadBytes(3);
+		        num2 = binaryReader.ReadInt32();
+	        }
+
+	        byte[] buffer;
+	        byte num3;
+	        switch (num1)
+	        {
+	        case 11:
+		        buffer = this.obfBufferW;
+		        num3 = (byte) ObfuscatedMoggNumbers.a;
+		        break;
+	        case 12:
+		        buffer = this.obfBufferX;
+		        num3 = (byte) ObfuscatedMoggNumbers.b;
+		        break;
+	        case 13:
+		        buffer = this.obfBufferX;
+		        num3 = (byte) ObfuscatedMoggNumbers.c;
+		        break;
+	        case 14:
+		        buffer = this.obfBufferX;
+		        num3 = (byte) ObfuscatedMoggNumbers.d;
+		        break;
+	        case 15:
+		        buffer = this.obfBufferX;
+		        num3 = (byte) ObfuscatedMoggNumbers.e;
+		        break;
+	        case 16:
+		        buffer = this.obfBufferX;
+		        num3 = (byte) ObfuscatedMoggNumbers.f;
+		        break;
+	        default:
+		        return mData;
+	        }
+
+	        using (MemoryStream memoryStream = new MemoryStream(mData))
+	        {
+		        using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
+		        {
+			        binaryWriter.Write(num3);
+			        binaryWriter.BaseStream.Seek(num2 - buffer.Length, SeekOrigin.Begin);
+			        binaryWriter.Write(buffer);
+		        }
+	        }
+
+	        return mData;
         }
-        
+
+        private static bool CheckFirstByteObfuscated(byte[] mData)
+        {
+	        using (BinaryReader binaryReader = new BinaryReader(new MemoryStream(mData)))
+	        {
+		        ObfuscatedMoggNumbers firstByte = (ObfuscatedMoggNumbers) binaryReader.ReadByte();
+
+		        switch (firstByte)
+		        {
+		        case ObfuscatedMoggNumbers.a:
+		        case ObfuscatedMoggNumbers.b:
+		        case ObfuscatedMoggNumbers.c:
+		        case ObfuscatedMoggNumbers.d:
+		        case ObfuscatedMoggNumbers.e:
+			    case ObfuscatedMoggNumbers.f:
+			        return true;
+		        default:
+			        return false;
+		        }
+	        }
+        }
+
         private GCHandle PlayingOggStreamHandle;
         public byte[] PlayingSongOggData;
         public byte[] NextSongOggData;
-        
+
         #endregion
-        
+
+        private enum ObfuscatedMoggNumbers // TODO: better describe
+        {
+	        f = 193, // 0x000000C1
+	        a = 195, // 0x000000C3
+	        b = 204, // 0x000000CC
+	        c = 205, // 0x000000CD
+	        d = 206, // 0x000000CE
+	        e = 207, // 0x000000CF
+        }
+
     }
 
     public enum DecryptMode
@@ -2322,6 +2711,7 @@ namespace C3Tools
         x0A = 0x0A, //No encryption
         x0B = 0x0B, //RB1, RB1 DLC
         x0C = 0x0C, //RB2, AC/DC Live, some RB2 DLC
+        x0D = 0x0D, // TODO: what?
         x0E = 0x0E, //Lego, Green Day, most RB2 DLC
         x0F = 0x0F, //RBN
         x10 = 0x10, //RB3, RB3 DLC

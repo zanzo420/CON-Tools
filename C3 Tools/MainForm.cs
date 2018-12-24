@@ -57,7 +57,7 @@ namespace C3Tools
         private readonly Panel lineRight = new Panel();
         private readonly Panel lineTop = new Panel();
         private readonly Panel lineBottom = new Panel();
- 
+
         public MainForm()
         {
             CheckForIllegalCrossThreadCalls = true;
@@ -118,7 +118,7 @@ namespace C3Tools
             btnRestricted1.Text = "Stems Isolator";
             btnRestricted2.Text = "Batch **cryptor";
         }
-        
+
         private void SaveConfig()
         {
             var sw = new StreamWriter(config, false);
@@ -291,7 +291,7 @@ namespace C3Tools
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
                 e.Effect = DragDropEffects.All;
         }
-        
+
         private void btnCreate_Click(object sender, EventArgs e)
         {
             if (MovedButton) return;
@@ -407,7 +407,7 @@ namespace C3Tools
             if (administratorModeWarning.Checked && IsAdministratorMode())
             {
                 MessageBox.Show("You are running " + Text + " in Administrator Mode!\nIn this mode, Windows disables drag/drop functionality and you will lose " +
-                                " many of the features added for your convenience\nIt's recommended you do not run " + Text + " in Administrator Mode in future use", 
+                                " many of the features added for your convenience\nIt's recommended you do not run " + Text + " in Administrator Mode in future use",
                                 Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             if (Application.StartupPath.Contains("Program Files"))
@@ -417,7 +417,7 @@ namespace C3Tools
             }
             updater.RunWorkerAsync();
         }
-        
+
         private void btnExtractor_Click(object sender, EventArgs e)
         {
             if (MovedButton) return;
@@ -435,7 +435,7 @@ namespace C3Tools
             activeForms.Add(activeForm);
             newVideo.Show();
         }
-        
+
         private void btnWiiPrep_Click(object sender, EventArgs e)
         {
             if (MovedButton) return;
@@ -681,7 +681,7 @@ namespace C3Tools
             }
             CurrentButton.FlatAppearance.MouseOverBackColor = Tools.LightenColor(CurrentButton.BackColor);
         }
-        
+
         private void ChangeFormBorder(bool borderless)
         {
             FormBorderStyle = borderless ? FormBorderStyle.None : FormBorderStyle.Sizable;
@@ -876,7 +876,7 @@ namespace C3Tools
             HelperLineLeft.Height = Height;
             HelperLineTop.Width = Width;
         }
-        
+
         private void contextMenuStrip2_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             showBanner.Visible = !picBanner.Visible;
@@ -970,7 +970,7 @@ namespace C3Tools
             ActiveBackground = transparentFormTool.Checked ? Color.White : BackColor;
             timer1.Enabled = true;
         }
-        
+
         private void btnAnalyzer_Click(object sender, EventArgs e)
         {
             if (MovedButton) return;
@@ -1093,7 +1093,7 @@ namespace C3Tools
                 MainForm_DragDrop(sender, e);
             }
         }
-        
+
         private static string GetAppVersion()
         {
             var vers = Assembly.GetExecutingAssembly().GetName().Version;
@@ -1124,7 +1124,7 @@ namespace C3Tools
                 get { return mMenuBackground; }
             }
         }
-        
+
         private void btnUSB_Click(object sender, EventArgs e)
         {
             if (MovedButton) return;
@@ -1133,7 +1133,7 @@ namespace C3Tools
             activeForms.Add(activeForm);
             newUSB.Show();
         }
-        
+
         private void updater_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             var path = Application.StartupPath + "\\bin\\update.txt";
@@ -1222,7 +1222,7 @@ namespace C3Tools
             updaterForm.SetInfo(Text, thisVersion, appName, newVersion, releaseDate, link, changeLog);
             updaterForm.ShowDialog();
         }
-        
+
         private void alwaysOnTop_Click(object sender, EventArgs e)
         {
             TopMost = alwaysOnTop.Checked;
@@ -1312,7 +1312,7 @@ namespace C3Tools
         {
             CurrentButton.Left += HorizontalJump;
         }
-        
+
         private void Buttons_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
@@ -1333,7 +1333,7 @@ namespace C3Tools
             HelperLineLeft.Visible = false;
             HelperLineTop.Visible = false;
         }
-        
+
         private void Buttons_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
@@ -1419,13 +1419,18 @@ namespace C3Tools
 
         private void enterPassword_Click(object sender, EventArgs e)
         {
-            //REDACTED BY TROJANNEMO
+	        if (!Tools.GetPassword() || !Tools.IsAuthorized())
+		        return;
+	        btnRestricted2.Text = "Batch **cryptor";
+	        btnRestricted2.Visible = true;
+	        btnRestricted1.Text = "Stems Isolator";
+	        btnRestricted1.Visible = true;
         }
 
         private void c3Forums_Click(object sender, EventArgs e)
         {
             Process.Start("http://customscreators.com/index.php?/topic/9095-c3-con-tools-v398-073116/");
-        }  
+        }
     }
 
     public class MyButton

@@ -111,7 +111,7 @@ namespace C3Tools
                     BassMix.BASS_Mixer_StreamAddChannelEx(BassMixer, BassStream, BASSFlag.BASS_MIXER_MATRIX, 0, Bass.BASS_ChannelSeconds2Bytes(BassMixer, length));
                     var track_vol = (float)Utils.DBToLevel(Convert.ToDouble(volume), 1.0);
                     Bass.BASS_ChannelSetPosition(BassStream, Bass.BASS_ChannelSeconds2Bytes(BassStream, start));
-                    BASS_MIXER_NODE[] nodes = 
+                    BASS_MIXER_NODE[] nodes =
                     {
                         new BASS_MIXER_NODE(0, 0),
                         new BASS_MIXER_NODE(Bass.BASS_ChannelSeconds2Bytes(BassMixer, fadeIn), track_vol),
@@ -162,7 +162,7 @@ namespace C3Tools
 
         public bool SplitMogg(string CON_file, string output_folder, string StemsToSplit, MoggSplitFormat format, string quality)
         {
-            return ExtractDecryptMogg(CON_file, false) && DoSplitMogg(output_folder, StemsToSplit, format, quality);
+            return ExtractDecryptMogg(CON_file, true) && DoSplitMogg(output_folder, StemsToSplit, format, quality);
         }
 
         public enum MoggSplitFormat
@@ -520,7 +520,7 @@ namespace C3Tools
             //in case we want to change this letter, it's only one value to change
             const double max_dB = 1.0;
 
-            //technically we could do each channel, but Magma only allows us to specify volume per track, 
+            //technically we could do each channel, but Magma only allows us to specify volume per track,
             //so both channels should have same volume, let's same a tiny bit of processing power
             float vol;
             try
