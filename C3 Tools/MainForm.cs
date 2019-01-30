@@ -7,7 +7,6 @@ using System.Net;
 using System.Reflection;
 using System.Security.Principal;
 using System.Windows.Forms;
-using C3Tools.Properties;
 using C3Tools.x360;
 using System.Drawing;
 using Cursors = System.Windows.Forms.Cursors;
@@ -100,19 +99,19 @@ namespace C3Tools
             lineBottom = new Panel { Name = "lineBottom", Parent = this, Visible = false, Width = 100, Height = 1, BackColor = Color.Black };
             lineTop.BringToFront();
             lineBottom.BringToFront();
-            try
+//            try
+//            {
+//                var sw = new StreamWriter(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "c3/contools"), false);
+//                sw.WriteLine(Path.Combine(Application.StartupPath, "c3contools.exe"));
+//                sw.Dispose();
+//            }
+//            catch (Exception)
+//            {}
+            config = Path.Combine(Application.StartupPath, "bin/config/main3.config");
+            Tools.DeleteFile(Path.Combine(Application.StartupPath, "bin/c.exe"));
+            if (!Directory.Exists(Path.Combine(Application.StartupPath, "bin/config")))
             {
-                var sw = new StreamWriter(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\c3\\contools", false);
-                sw.WriteLine(Application.StartupPath + "\\c3contools.exe");
-                sw.Dispose();
-            }
-            catch (Exception)
-            {}
-            config = Application.StartupPath + "\\bin\\config\\main3.config";
-            Tools.DeleteFile(Application.StartupPath + "\\bin\\c.exe");
-            if (!Directory.Exists(Application.StartupPath + "\\bin\\config\\"))
-            {
-                Directory.CreateDirectory(Application.StartupPath + "\\bin\\config\\");
+                Directory.CreateDirectory(Path.Combine(Application.StartupPath, "bin/config"));
             }
             if (!Tools.IsAuthorized()) return;
             btnRestricted1.Text = "Stems Isolator";
@@ -197,12 +196,13 @@ namespace C3Tools
                     {
                         if (VariousFunctions.ReadFileType(toLoad) == XboxFileType.STFS)
                         {
-                            var xExplorer = new CONExplorer(btnCONCreator.BackColor, btnCONCreator.ForeColor);
-                            xExplorer.LoadCON(toLoad);
-                            activeForm = xExplorer;
-                            activeForms.Add(activeForm);
-                            xExplorer.Show();
-                            counter++;
+                            // TODO
+//                            var xExplorer = new CONExplorer(btnCONCreator.BackColor, btnCONCreator.ForeColor);
+//                            xExplorer.LoadCON(toLoad);
+//                            activeForm = xExplorer;
+//                            activeForms.Add(activeForm);
+//                            xExplorer.Show();
+//                            counter++;
                         }
                         else switch (Path.GetExtension(toLoad.ToLowerInvariant()))
                         {
@@ -218,10 +218,11 @@ namespace C3Tools
                                 RunAudioAnalyzer(toLoad);
                                 break;
                             case ".setlist":
-                                var newManager = new SetlistManager(btnSetlistManager.BackColor,btnSetlistManager.ForeColor,toLoad);
-                                activeForm = newManager;
-                                activeForms.Add(activeForm);
-                                newManager.Show();
+                                // TODO
+//                                var newManager = new SetlistManager(btnSetlistManager.BackColor,btnSetlistManager.ForeColor,toLoad);
+//                                activeForm = newManager;
+//                                activeForms.Add(activeForm);
+//                                newManager.Show();
                                 break;
                             case ".png":
                             case ".gif":
@@ -236,10 +237,11 @@ namespace C3Tools
                             case ".png_wii":
                             case ".dds":
                             case ".tpl":
-                                var newAlbum = new AdvancedArtConverter(Path.GetDirectoryName(toLoad),btnAdvancedArtConverter.BackColor,btnAdvancedArtConverter.ForeColor);
-                                activeForm = newAlbum;
-                                activeForms.Add(activeForm);
-                                newAlbum.Show();
+                                // TODO
+//                                var newAlbum = new AdvancedArtConverter(Path.GetDirectoryName(toLoad),btnAdvancedArtConverter.BackColor,btnAdvancedArtConverter.ForeColor);
+//                                activeForm = newAlbum;
+//                                activeForms.Add(activeForm);
+//                                newAlbum.Show();
                                 break;
                             case ".config":
                                 if (toLoad.EndsWith("main.config", StringComparison.Ordinal))
@@ -248,10 +250,11 @@ namespace C3Tools
                                 }
                                 break;
                             case ".rba":
-                                var newRBAConverter = new RBAConverter(btnCONConverter.BackColor, btnCONConverter.ForeColor, Path.GetDirectoryName(toLoad));
-                                activeForm = newRBAConverter;
-                                activeForms.Add(activeForm);
-                                newRBAConverter.Show();
+                                // TODO
+//                                var newRBAConverter = new RBAConverter(btnCONConverter.BackColor, btnCONConverter.ForeColor, Path.GetDirectoryName(toLoad));
+//                                activeForm = newRBAConverter;
+//                                activeForms.Add(activeForm);
+//                                newRBAConverter.Show();
                                 break;
                             default:
                                 MessageBox.Show("That's not a valid file to drag and drop here ... try again","What are you doing?!!?", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -275,7 +278,7 @@ namespace C3Tools
         {
             if (string.IsNullOrWhiteSpace(bg_image) || !File.Exists(bg_image))
             {
-                BackgroundImage = bg_image == "default" ? Resources.bg3 : null;
+                BackgroundImage = bg_image == "default" ? new Bitmap(new MemoryStream(Resources.bg3)) : null;
                 return;
             }
             timer1.Enabled = false;
@@ -294,29 +297,32 @@ namespace C3Tools
 
         private void btnCreate_Click(object sender, EventArgs e)
         {
-            if (MovedButton) return;
-            var xCreate = new CONCreator(btnCONCreator.BackColor, btnCONCreator.ForeColor);
-            activeForm = xCreate;
-            activeForms.Add(activeForm);
-            xCreate.Show();
+            // TODO
+//            if (MovedButton) return;
+//            var xCreate = new CONCreator(btnCONCreator.BackColor, btnCONCreator.ForeColor);
+//            activeForm = xCreate;
+//            activeForms.Add(activeForm);
+//            xCreate.Show();
         }
 
         private void btnPackager_Click(object sender, EventArgs e)
         {
-            if (MovedButton) return;
-            var newPackager = new PackCreator(this, btnPackCreator.BackColor, btnPackCreator.ForeColor);
-            activeForm = newPackager;
-            activeForms.Add(activeForm);
-            newPackager.Show();
+            // TODO
+//            if (MovedButton) return;
+//            var newPackager = new PackCreator(this, btnPackCreator.BackColor, btnPackCreator.ForeColor);
+//            activeForm = newPackager;
+//            activeForms.Add(activeForm);
+//            newPackager.Show();
         }
 
         private void btnArt_Click(object sender, EventArgs e)
         {
-            if (MovedButton) return;
-            var newAlbum = new AdvancedArtConverter("", btnAdvancedArtConverter.BackColor, btnAdvancedArtConverter.ForeColor);
-            activeForm = newAlbum;
-            activeForms.Add(activeForm);
-            newAlbum.Show();
+            // TODO
+//            if (MovedButton) return;
+//            var newAlbum = new AdvancedArtConverter("", btnAdvancedArtConverter.BackColor, btnAdvancedArtConverter.ForeColor);
+//            activeForm = newAlbum;
+//            activeForms.Add(activeForm);
+//            newAlbum.Show();
         }
 
         private void btnVisualizer_Click(object sender, EventArgs e)
@@ -327,12 +333,13 @@ namespace C3Tools
 
         private void RunVisualizer(string con_file)
         {
+            // TODO
             //clear temp folder if it exists
-            Tools.DeleteFolder(Application.StartupPath + "\\visualizer\\", true);
-            var xVisualizer = new Visualizer(btnVisualizer.BackColor, btnVisualizer.ForeColor, con_file);
-            activeForm = xVisualizer;
-            activeForms.Add(activeForm);
-            xVisualizer.Show();
+//            Tools.DeleteFolder(Application.StartupPath + "\\visualizer\\", true);
+//            var xVisualizer = new Visualizer(btnVisualizer.BackColor, btnVisualizer.ForeColor, con_file);
+//            activeForm = xVisualizer;
+//            activeForms.Add(activeForm);
+//            xVisualizer.Show();
         }
 
         private void MainForm_Click(object sender, EventArgs e)
@@ -420,29 +427,32 @@ namespace C3Tools
 
         private void btnExtractor_Click(object sender, EventArgs e)
         {
-            if (MovedButton) return;
-            var newExtractor = new BatchExtractor(btnBatchExtractor.BackColor, btnBatchExtractor.ForeColor);
-            activeForm = newExtractor;
-            activeForms.Add(activeForm);
-            newExtractor.Show();
+            // TODO
+//            if (MovedButton) return;
+//            var newExtractor = new BatchExtractor(btnBatchExtractor.BackColor, btnBatchExtractor.ForeColor);
+//            activeForm = newExtractor;
+//            activeForms.Add(activeForm);
+//            newExtractor.Show();
         }
 
         private void btnVideo_Click(object sender, EventArgs e)
         {
-            if (MovedButton) return;
-            var newVideo = new VideoPreparer(btnVideoPreparer.BackColor, btnVideoPreparer.ForeColor);
-            activeForm = newVideo;
-            activeForms.Add(activeForm);
-            newVideo.Show();
+            // TODO
+//            if (MovedButton) return;
+//            var newVideo = new VideoPreparer(btnVideoPreparer.BackColor, btnVideoPreparer.ForeColor);
+//            activeForm = newVideo;
+//            activeForms.Add(activeForm);
+//            newVideo.Show();
         }
 
         private void btnWiiPrep_Click(object sender, EventArgs e)
         {
-            if (MovedButton) return;
-            var newWiiPrep = new WiiConverter(btnWiiConverter.BackColor, btnWiiConverter.ForeColor, "");
-            activeForm = newWiiPrep;
-            activeForms.Add(activeForm);
-            newWiiPrep.Show();
+            // TODO
+//            if (MovedButton) return;
+//            var newWiiPrep = new WiiConverter(btnWiiConverter.BackColor, btnWiiConverter.ForeColor, "");
+//            activeForm = newWiiPrep;
+//            activeForms.Add(activeForm);
+//            newWiiPrep.Show();
         }
 
         private void btnPhaseShift_Click(object sender, EventArgs e)
@@ -525,10 +535,11 @@ namespace C3Tools
 
         private void RunMIDICleaner(string file)
         {
-            var newMIDICleaner = new MIDICleaner(file, btnMIDICleaner.BackColor, btnMIDICleaner.ForeColor);
-            activeForm = newMIDICleaner;
-            activeForms.Add(activeForm);
-            newMIDICleaner.Show();
+            // TODO
+//            var newMIDICleaner = new MIDICleaner(file, btnMIDICleaner.BackColor, btnMIDICleaner.ForeColor);
+//            activeForm = newMIDICleaner;
+//            activeForms.Add(activeForm);
+//            newMIDICleaner.Show();
         }
 
         private void btnQuickDTA_Click(object sender, EventArgs e)
@@ -539,10 +550,11 @@ namespace C3Tools
 
         private void RunQuickDTAEditor(string file)
         {
-            var newQuickDTA = new QuickDTAEditor(file);
-            activeForm = newQuickDTA;
-            activeForms.Add(activeForm);
-            newQuickDTA.Show();
+            // TODO
+//            var newQuickDTA = new QuickDTAEditor(file);
+//            activeForm = newQuickDTA;
+//            activeForms.Add(activeForm);
+//            newQuickDTA.Show();
         }
 
         private void btnQuickPack_Click(object sender, EventArgs e)
@@ -553,34 +565,37 @@ namespace C3Tools
 
         private void RunQuickPackEditor(string dta, string pack)
         {
-            var newQuickPack = new QuickPackEditor(this, btnQuickPackEditor.BackColor, btnQuickPackEditor.ForeColor, dta, pack);
-            activeForm = newQuickPack;
-            activeForms.Add(activeForm);
-            newQuickPack.Show();
+            // TODO
+//            var newQuickPack = new QuickPackEditor(this, btnQuickPackEditor.BackColor, btnQuickPackEditor.ForeColor, dta, pack);
+//            activeForm = newQuickPack;
+//            activeForms.Add(activeForm);
+//            newQuickPack.Show();
         }
 
         private void btnSetlist_Click(object sender, EventArgs e)
         {
-            if (MovedButton) return;
-            var newSetlistManager = new SetlistManager(btnSetlistManager.BackColor, btnSetlistManager.ForeColor, "", this);
-            activeForm = newSetlistManager;
-            activeForms.Add(activeForm);
-            newSetlistManager.Show();
+            // TODO
+//            if (MovedButton) return;
+//            var newSetlistManager = new SetlistManager(btnSetlistManager.BackColor, btnSetlistManager.ForeColor, "", this);
+//            activeForm = newSetlistManager;
+//            activeForms.Add(activeForm);
+//            newSetlistManager.Show();
         }
 
         private void btnPS3_Click(object sender, EventArgs e)
         {
-            if (MovedButton) return;
-            if (!File.Exists(Application.StartupPath + "\\bin\\nemoedat.exe"))
-            {
-                MessageBox.Show("Required file 'nemoedat.exe' is missing!\nDownload it from the C3 CON Tools thread and place it in the \\bin\\ directory, then try to run " +
-                                "this tool again", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            var newPS3Prep = new PS3Converter(this,  btnPS3Converter.BackColor, btnPS3Converter.ForeColor);
-            activeForm = newPS3Prep;
-            activeForms.Add(activeForm);
-            newPS3Prep.Show();
+            // TODO
+//            if (MovedButton) return;
+//            if (!File.Exists(Application.StartupPath + "\\bin\\nemoedat.exe"))
+//            {
+//                MessageBox.Show("Required file 'nemoedat.exe' is missing!\nDownload it from the C3 CON Tools thread and place it in the \\bin\\ directory, then try to run " +
+//                                "this tool again", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+//                return;
+//            }
+//            var newPS3Prep = new PS3Converter(this,  btnPS3Converter.BackColor, btnPS3Converter.ForeColor);
+//            activeForm = newPS3Prep;
+//            activeForms.Add(activeForm);
+//            newPS3Prep.Show();
         }
 
         private void picBanner_MouseClick(object sender, MouseEventArgs e)
@@ -724,7 +739,7 @@ namespace C3Tools
             timer1.Enabled = false;
             activeColorToolStripMenuItem.Checked = false;
             BackColor = Color.FromName("GradientInactiveCaption");
-            BackgroundImage = Resources.bg3;
+            BackgroundImage = new Bitmap(new MemoryStream(Resources.bg3));
             bg_image = "default";
             picBanner.Visible = true;
             picBanner.BackColor = Color.Transparent;
@@ -902,20 +917,22 @@ namespace C3Tools
 
         private void btnSaveFileImageViewer_Click(object sender, EventArgs e)
         {
-            if (MovedButton) return;
-            var newViewer = new SaveFileImageEditor(btnSaveFileImageEditor.BackColor, btnSaveFileImageEditor.ForeColor);
-            activeForm = newViewer;
-            activeForms.Add(activeForm);
-            newViewer.Show();
+            // TODO
+//            if (MovedButton) return;
+//            var newViewer = new SaveFileImageEditor(btnSaveFileImageEditor.BackColor, btnSaveFileImageEditor.ForeColor);
+//            activeForm = newViewer;
+//            activeForms.Add(activeForm);
+//            newViewer.Show();
         }
 
         private void btnRBAConverter_Click(object sender, EventArgs e)
         {
-            if (MovedButton) return;
-            var newRBAConverter = new RBAConverter(btnCONConverter.BackColor, btnCONConverter.ForeColor);
-            activeForm = newRBAConverter;
-            activeForms.Add(activeForm);
-            newRBAConverter.Show();
+            // TODO
+//            if (MovedButton) return;
+//            var newRBAConverter = new RBAConverter(btnCONConverter.BackColor, btnCONConverter.ForeColor);
+//            activeForm = newRBAConverter;
+//            activeForms.Add(activeForm);
+//            newRBAConverter.Show();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -979,36 +996,40 @@ namespace C3Tools
 
         private void RunSongAnalyzer(string file)
         {
-            var newAnalyzer = new SongAnalyzer(file);
-            activeForm = newAnalyzer;
-            activeForms.Add(activeForm);
-            newAnalyzer.Show();
+            // TODO
+//            var newAnalyzer = new SongAnalyzer(file);
+//            activeForm = newAnalyzer;
+//            activeForms.Add(activeForm);
+//            newAnalyzer.Show();
         }
 
         private void RunAudioAnalyzer(string file)
         {
-            var analyzer = new AudioAnalyzer(file);
-            activeForm = analyzer;
-            activeForms.Add(activeForm);
-            analyzer.Show();
+            // TODO
+//            var analyzer = new AudioAnalyzer(file);
+//            activeForm = analyzer;
+//            activeForms.Add(activeForm);
+//            analyzer.Show();
         }
 
         private void btnIndexer_Click(object sender, EventArgs e)
         {
-            if (MovedButton) return;
-            var newIndexer = new FileIndexer(btnFileIndexer.BackColor, btnFileIndexer.ForeColor);
-            activeForm = newIndexer;
-            activeForms.Add(activeForm);
-            newIndexer.Show();
+            // TODO
+//            if (MovedButton) return;
+//            var newIndexer = new FileIndexer(btnFileIndexer.BackColor, btnFileIndexer.ForeColor);
+//            activeForm = newIndexer;
+//            activeForms.Add(activeForm);
+//            newIndexer.Show();
         }
 
         private void btnEvent_Click(object sender, EventArgs e)
         {
-            if (MovedButton) return;
-            var newEventManager = new EventManager(this);
-            activeForm = newEventManager;
-            activeForms.Add(activeForm);
-            newEventManager.Show();
+            // TODO
+//            if (MovedButton) return;
+//            var newEventManager = new EventManager(this);
+//            activeForm = newEventManager;
+//            activeForms.Add(activeForm);
+//            newEventManager.Show();
         }
 
         private void btnWii_DragDrop(object sender, DragEventArgs e)
@@ -1127,11 +1148,12 @@ namespace C3Tools
 
         private void btnUSB_Click(object sender, EventArgs e)
         {
-            if (MovedButton) return;
-            var newUSB = new USBnator();
-            activeForm = newUSB;
-            activeForms.Add(activeForm);
-            newUSB.Show();
+            // TODO
+//            if (MovedButton) return;
+//            var newUSB = new USBnator();
+//            activeForm = newUSB;
+//            activeForms.Add(activeForm);
+//            newUSB.Show();
         }
 
         private void updater_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
@@ -1218,9 +1240,10 @@ namespace C3Tools
                 }
                 return;
             }
-            var updaterForm = new Updater();
-            updaterForm.SetInfo(Text, thisVersion, appName, newVersion, releaseDate, link, changeLog);
-            updaterForm.ShowDialog();
+            // TODO
+//            var updaterForm = new Updater();
+//            updaterForm.SetInfo(Text, thisVersion, appName, newVersion, releaseDate, link, changeLog);
+//            updaterForm.ShowDialog();
         }
 
         private void alwaysOnTop_Click(object sender, EventArgs e)
@@ -1272,20 +1295,22 @@ namespace C3Tools
 
         private void btnBatchRenamer_Click(object sender, EventArgs e)
         {
-            if (MovedButton) return;
-            var newRenamer = new BatchRenamer(btnBatchRenamer.BackColor, btnBatchRenamer.ForeColor);
-            activeForm = newRenamer;
-            activeForms.Add(activeForm);
-            newRenamer.Show();
+            // TODO
+//            if (MovedButton) return;
+//            var newRenamer = new BatchRenamer(btnBatchRenamer.BackColor, btnBatchRenamer.ForeColor);
+//            activeForm = newRenamer;
+//            activeForms.Add(activeForm);
+//            newRenamer.Show();
         }
 
         private void btnUpgradeBundler_Click(object sender, EventArgs e)
         {
-            if (MovedButton) return;
-            var bundler = new ProUpgradeBundler(btnUpgradeBundler.BackColor, btnUpgradeBundler.ForeColor);
-            activeForm = bundler;
-            activeForms.Add(activeForm);
-            bundler.Show();
+            // TODO
+//            if (MovedButton) return;
+//            var bundler = new ProUpgradeBundler(btnUpgradeBundler.BackColor, btnUpgradeBundler.ForeColor);
+//            activeForm = bundler;
+//            activeForms.Add(activeForm);
+//            bundler.Show();
         }
 
         private void hideButton_Click(object sender, EventArgs e)
@@ -1402,7 +1427,7 @@ namespace C3Tools
 
         private void viewChangeLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var readme = Application.StartupPath + "\\c3contools_changelog.txt";
+            var readme = Path.Combine(Application.StartupPath, "c3contools_changelog.txt");
             if (!File.Exists(readme))
             {
                 MessageBox.Show("Change log is missing - don't delete any files that come with this program!", Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);

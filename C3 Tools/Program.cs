@@ -40,26 +40,20 @@ namespace C3Tools
                 Directory.CreateDirectory(binFolder);
             }
 
-            string path = System.IO.Path.Combine(Application.StartupPath, "bin/KV.bin");
-            if (!File.Exists(path))
-            {
-                MessageBox.Show("Required file 'KV.bin' was not found in the \bin subdirectory\n" + APP_NAME + " can't work without it ...", "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Process.GetCurrentProcess().Kill();
-            }
-            var kv = new RSAParams(System.IO.Path.Combine(Application.StartupPath, "bin/KV.bin"));
+            var kv = new RSAParams(new MemoryStream(Resources.KV));
             if (!kv.Valid)
             {
-                MessageBox.Show("Required file 'KV.bin' was found in the \bin subdirectory but it is not valid\n" + APP_NAME + " can't work without it ...", "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Required resource 'KV.bin' was not valid\n" + APP_NAME + " can't work without it ...", "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Process.GetCurrentProcess().Kill();
             }
 
-            var con = "";
+//            var con = "";
             var argument = args.Aggregate("", (current, arg) => current + " " + arg).ToLowerInvariant().Trim();
             if (string.IsNullOrWhiteSpace(argument))
             {
                 Application.Run(new MainForm());
             }
-            else if (argument.Contains("-concreator"))
+            /*else if (argument.Contains("-concreator"))
             {
                 Application.Run(new CONCreator(Color.FromArgb(34, 169, 31), Color.White));
             }
@@ -213,12 +207,12 @@ namespace C3Tools
             else if (argument.Contains("-ps3"))
             {
                 Application.Run(new PS3Converter(null, Color.FromArgb(37, 89, 201), Color.White));
-            }
+            }*/
             else if (argument.Contains("-phaseshift"))
             {
                 Application.Run(new PhaseShiftConverter(Color.FromArgb(37, 89, 201), Color.White));
             }
-            else if (argument.Contains("-rba"))
+            /*else if (argument.Contains("-rba"))
             {
                 Application.Run(new RBAConverter(Color.FromArgb(37, 89, 201), Color.White));
             }
@@ -229,17 +223,17 @@ namespace C3Tools
             else if (argument.Contains("-video"))
             {
                 Application.Run(new VideoPreparer(Color.FromArgb(240, 104, 4), Color.White));
-            }
+            }*/
             else
             {
                 try
                 {
-                    if (VariousFunctions.ReadFileType(argument) == XboxFileType.STFS)
+                    /*if (VariousFunctions.ReadFileType(argument) == XboxFileType.STFS)
                     {
                         var xExplorer = new CONExplorer(Color.FromArgb(34, 169, 31), Color.White, true);
                         xExplorer.LoadCON(argument);
                         Application.Run(xExplorer);
-                    }
+                    }*/
                 }
                 catch (Exception)
                 {

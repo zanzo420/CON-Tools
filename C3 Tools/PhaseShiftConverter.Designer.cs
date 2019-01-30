@@ -1,4 +1,7 @@
-﻿namespace C3Tools
+﻿using System.Drawing;
+using System.IO;
+
+namespace C3Tools
 {
     partial class PhaseShiftConverter
     {
@@ -123,7 +126,7 @@
             this.picPin.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.picPin.BackColor = System.Drawing.Color.Transparent;
             this.picPin.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.picPin.Image = global::C3Tools.Properties.Resources.unpinned;
+            this.picPin.Image = new Bitmap(new MemoryStream(Resources.unpinned));
             this.picPin.Location = new System.Drawing.Point(567, 4);
             this.picPin.Name = "picPin";
             this.picPin.Size = new System.Drawing.Size(20, 20);
@@ -270,7 +273,7 @@
             // 
             // picWorking
             // 
-            this.picWorking.Image = global::C3Tools.Properties.Resources.working;
+            this.picWorking.Image = new Bitmap(new MemoryStream(Resources.working));
             this.picWorking.Location = new System.Drawing.Point(242, 153);
             this.picWorking.Name = "picWorking";
             this.picWorking.Size = new System.Drawing.Size(128, 15);
@@ -407,7 +410,8 @@
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.lstLog);
             this.DoubleBuffered = true;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            // TODO
+//            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "PhaseShiftConverter";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

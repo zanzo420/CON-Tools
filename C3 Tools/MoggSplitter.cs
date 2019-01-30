@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using C3Tools.x360;
@@ -19,22 +20,12 @@ namespace C3Tools
         private int SourceStream;
         public List<string> ErrorLog;
 
-        private void Initialize()
+        public bool ExtractDecryptMogg(string CON_file, bool bypass)
         {
             Splits = new List<int>();
             ErrorLog = new List<string>();
-        }
-
-        public bool ExtractDecryptMogg(string CON_file, bool bypass)
-        {
-            return ExtractDecryptMogg(CON_file, bypass, new NemoTools(), new DTAParser());
-        }
-
-        public bool ExtractDecryptMogg(string CON_file, bool bypass, NemoTools tools, DTAParser parser)
-        {
-            Initialize();
-            Tools = tools;
-            Parser = parser;
+            Tools = new NemoTools();
+            Parser = new DTAParser();
             Tools.ReleaseStreamHandle();
             if (!Parser.ExtractDTA(CON_file))
             {
@@ -73,7 +64,10 @@ namespace C3Tools
                 ErrorLog.Add("Couldn't extract the mogg file from that CON file");
                 return false;
             }
-            LoadLibraries();
+            BassEnc.BASS_Encode_GetVersion();
+            BassMix.BASS_Mixer_GetVersion();
+            BassFx.BASS_FX_GetVersion();
+            Bass.BASS_GetVersion();
             if (Tools.DecM(mData, bypass, false, DecryptMode.ToMemory)) return true;
             ErrorLog.Add("Mogg file is encrypted and I could not decrypt it, can't split it");
             return false;
@@ -82,14 +76,6 @@ namespace C3Tools
         private static void UnloadLibraries()
         {
             Bass.BASS_Free();
-        }
-
-        private static void LoadLibraries()
-        {
-            BassEnc.BASS_Encode_GetVersion();
-            BassMix.BASS_Mixer_GetVersion();
-            BassFx.BASS_FX_GetVersion();
-            Bass.BASS_GetVersion();
         }
 
         public bool DownmixMogg(string CON_file, string output, MoggSplitFormat format, string quality, string stems)
@@ -102,7 +88,7 @@ namespace C3Tools
             if (!ExtractDecryptMogg(CON_file, true)) return false;
             try
             {
-                if (!InitBass()) return false;
+                if (!InitBass(ErrorLog, Tools)) return false;
                 var BassStream = Bass.BASS_StreamCreateFile(Tools.GetOggStreamIntPtr(), 0, Tools.PlayingSongOggData.Length, BASSFlag.BASS_STREAM_DECODE);
                 var channel_info = Bass.BASS_ChannelGetInfo(BassStream);
                 var BassMixer = BassMix.BASS_Mixer_StreamCreate(doWii ? 22050 : channel_info.freq, 2, BASSFlag.BASS_MIXER_END | BASSFlag.BASS_STREAM_DECODE);
@@ -162,9 +148,195 @@ namespace C3Tools
             }
         }
 
-        public bool SplitMogg(string CON_file, string output_folder, string StemsToSplit, MoggSplitFormat format, string quality)
-        {
-            return ExtractDecryptMogg(CON_file, true) && DoSplitMogg(output_folder, StemsToSplit, format, quality);
+        public static bool SplitMogg(string CON_file, string output_folder, string StemsToSplit, MoggSplitFormat format, string quality, List<string> ErrorLog) {
+
+            List<int> Splits = new List<int>();
+            NemoTools Tools = new NemoTools();
+            DTAParser Parser = new DTAParser();
+            Tools.ReleaseStreamHandle();
+            if (!Parser.ExtractDTA(CON_file))
+            {
+                ErrorLog.Add("Couldn't extract songs.dta file from that CON file");
+                return false;
+            }
+
+            if (!Parser.ReadDTA(Parser.DTA) || !Parser.Songs.Any())
+            {
+                ErrorLog.Add("Couldn't read that songs.dta file");
+                return false;
+            }
+
+            if (Parser.Songs.Count > 1)
+            {
+                ErrorLog.Add(
+                    "This feature does not support packs, only single songs\nUse the dePACK feature in C3 CON Tools' Quick Pack Editor to split this pack into single songs and try again");
+                return false;
+            }
+
+            var internal_name = Parser.Songs[0].InternalName;
+            var xCON = new STFSPackage(CON_file);
+            if (!xCON.ParseSuccess)
+            {
+                ErrorLog.Add("Couldn't parse that CON file");
+                xCON.CloseIO();
+                return false;
+            }
+
+            var xMogg = xCON.GetFile("songs/" + internal_name + "/" + internal_name + ".mogg");
+            if (xMogg == null)
+            {
+                ErrorLog.Add("Couldn't find the mogg file inside that CON file");
+                xCON.CloseIO();
+                return false;
+            }
+
+            var mData = xMogg.Extract();
+            xCON.CloseIO();
+            if (mData == null || mData.Length == 0)
+            {
+                ErrorLog.Add("Couldn't extract the mogg file from that CON file");
+                return false;
+            }
+
+//            BassEnc.BASS_Encode_GetVersion();
+//            BassMix.BASS_Mixer_GetVersion();
+//            BassFx.BASS_FX_GetVersion();
+//            Bass.BASS_GetVersion();
+            if (!Tools.DecM(mData, true, false, DecryptMode.ToMemory))
+            {
+                ErrorLog.Add("Mogg file is encrypted and I could not decrypt it, can't split it");
+                return false;
+            }
+
+            var folder = output_folder;
+
+            var ext = "ogg";
+            if (format == MoggSplitFormat.WAV)
+            {
+                ext = "wav";
+            }
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+            var drums = Path.Combine(folder, "drums." + ext);
+            var drums1 = Path.Combine(folder, "drums_1." + ext);
+            var drums2 = Path.Combine(folder, "drums_2." + ext);
+            var drums3 = Path.Combine(folder, "drums_3." + ext);
+            var bass = Path.Combine(folder, "bass." + ext);
+            var rhythm = Path.Combine(folder, "rhythm." + ext);
+            var guitar = Path.Combine(folder, "guitar." + ext);
+            var keys = Path.Combine(folder, "keys." + ext);
+            var vocals = Path.Combine(folder, "vocals." + ext);
+            var backing = Path.Combine(folder, "backing." + ext);
+            var song = Path.Combine(folder, "song." + ext);
+            var crowd = Path.Combine(folder, "crowd." + ext);
+            var tracks = new List<string> { drums, drums1, drums2, drums3, bass, guitar, keys, vocals, backing, crowd };
+            foreach (var track in tracks)
+            {
+                Tools.DeleteFile(track);
+            }
+            try
+            {
+                if (!InitBass(ErrorLog, Tools)) return false;
+                int SourceStream = Bass.BASS_StreamCreateFile(Tools.GetOggStreamIntPtr(), 0, Tools.PlayingSongOggData.Length, BASSFlag.BASS_STREAM_DECODE);
+                var info = Bass.BASS_ChannelGetInfo(SourceStream);
+                var ArrangedChannels = ArrangeStreamChannels(info.chans, format == MoggSplitFormat.OGG);
+                var isSlave = false;
+                if (Parser.Songs[0].ChannelsDrums > 0 && (StemsToSplit.Contains("allstems") || StemsToSplit.Contains("drums")))
+                {
+                    switch (Parser.Songs[0].ChannelsDrums)
+                    {
+                        case 2:
+                            PrepareChannelsToSplit(0, ArrangedChannels, 2, GetStemVolume(Parser, 0), drums, format, quality, SourceStream, Splits, false);
+                            break;
+                        case 3:
+                            PrepareChannelsToSplit(0, ArrangedChannels, 1, GetStemVolume(Parser, 0), drums1, format, quality, SourceStream, Splits, false);
+                            PrepareChannelsToSplit(1, ArrangedChannels, 2, GetStemVolume(Parser, 1), drums2, format, quality, SourceStream, Splits);
+                            break;
+                        case 4:
+                            PrepareChannelsToSplit(0, ArrangedChannels, 1, GetStemVolume(Parser, 0), drums1, format, quality, SourceStream, Splits, false);
+                            PrepareChannelsToSplit(1, ArrangedChannels, 1, GetStemVolume(Parser, 1), drums2, format, quality, SourceStream, Splits);
+                            PrepareChannelsToSplit(2, ArrangedChannels, 2, GetStemVolume(Parser, 2), drums3, format, quality, SourceStream, Splits);
+                            break;
+                        case 5:
+                            PrepareChannelsToSplit(0, ArrangedChannels, 1, GetStemVolume(Parser, 0), drums1, format, quality, SourceStream, Splits, false);
+                            PrepareChannelsToSplit(1, ArrangedChannels, 2, GetStemVolume(Parser, 1), drums2, format, quality, SourceStream, Splits);
+                            PrepareChannelsToSplit(3, ArrangedChannels, 2, GetStemVolume(Parser, 3), drums3, format, quality, SourceStream, Splits);
+                            break;
+                        case 6:
+                            PrepareChannelsToSplit(0, ArrangedChannels, 2, GetStemVolume(Parser, 0), drums1, format, quality, SourceStream, Splits, false);
+                            PrepareChannelsToSplit(2, ArrangedChannels, 2, GetStemVolume(Parser, 2), drums2, format, quality, SourceStream, Splits);
+                            PrepareChannelsToSplit(4, ArrangedChannels, 2, GetStemVolume(Parser, 4), drums3, format, quality, SourceStream, Splits);
+                            break;
+                    }
+                    isSlave = true;
+                }
+                var channel = Parser.Songs[0].ChannelsDrums;
+                if (Parser.Songs[0].ChannelsBass > 0 && (StemsToSplit.Contains("allstems") || StemsToSplit.Contains("bass") || StemsToSplit.Contains("rhythm")))
+                {
+                    PrepareChannelsToSplit(channel, ArrangedChannels, Parser.Songs[0].ChannelsBass, GetStemVolume(Parser, channel), StemsToSplit.Contains("rhythm") ? rhythm : bass, format, quality, SourceStream, Splits, isSlave);
+                    isSlave = true;
+                }
+                channel += Parser.Songs[0].ChannelsBass;
+                if (Parser.Songs[0].ChannelsGuitar > 0 && (StemsToSplit.Contains("allstems") || StemsToSplit.Contains("guitar")))
+                {
+                    PrepareChannelsToSplit(channel, ArrangedChannels, Parser.Songs[0].ChannelsGuitar, GetStemVolume(Parser, channel), guitar, format, quality, SourceStream, Splits, isSlave);
+                    isSlave = true;
+                }
+                channel += Parser.Songs[0].ChannelsGuitar;
+                if (Parser.Songs[0].ChannelsVocals > 0 && (StemsToSplit.Contains("allstems") || StemsToSplit.Contains("vocals")))
+                {
+                    PrepareChannelsToSplit(channel, ArrangedChannels, Parser.Songs[0].ChannelsVocals, GetStemVolume(Parser, channel), vocals, format, quality, SourceStream, Splits, isSlave);
+                    isSlave = true;
+                }
+                channel += Parser.Songs[0].ChannelsVocals;
+                if (Parser.Songs[0].ChannelsKeys > 0 && (StemsToSplit.Contains("allstems") || StemsToSplit.Contains("keys")))
+                {
+                    PrepareChannelsToSplit(channel, ArrangedChannels, Parser.Songs[0].ChannelsKeys, GetStemVolume(Parser, channel), keys, format, quality, SourceStream, Splits, isSlave);
+                    isSlave = true;
+                }
+                channel += Parser.Songs[0].ChannelsKeys;
+                if (Parser.Songs[0].ChannelsBacking() > 0 && (StemsToSplit.Contains("allstems") || StemsToSplit.Contains("backing") || StemsToSplit.Contains("song")))
+                {
+                    PrepareChannelsToSplit(channel, ArrangedChannels, Parser.Songs[0].ChannelsBacking(), GetStemVolume(Parser, channel), StemsToSplit.Contains("song") ? song : backing, format, quality, SourceStream, Splits, isSlave);
+                    isSlave = true;
+                }
+                channel += Parser.Songs[0].ChannelsBacking();
+                if (Parser.Songs[0].ChannelsCrowd > 0 && (StemsToSplit.Contains("allstems") || StemsToSplit.Contains("crowd")))
+                {
+                    PrepareChannelsToSplit(channel, ArrangedChannels, Parser.Songs[0].ChannelsCrowd, GetStemVolume(Parser, channel), crowd, format, quality, SourceStream, Splits, isSlave);
+                }
+                while (true)
+                {
+                    var buffer = new byte[20000];
+                    var c = Bass.BASS_ChannelGetData(Splits[0], buffer, buffer.Length);
+                    if (c < 0) break;
+                    for (var i = 1; i < Splits.Count; i++)
+                    {
+                        while (Bass.BASS_ChannelGetData(Splits[i], buffer, buffer.Length) > 0){}
+                    }
+                }
+                foreach (var split in Splits)
+                {
+                    Bass.BASS_StreamFree(split);
+                }
+                UnloadLibraries();
+                Tools.ReleaseStreamHandle();
+            }
+            catch (Exception ex)
+            {
+                ErrorLog.Add("Error splitting mogg file:");
+                ErrorLog.Add(ex.Message);
+                foreach (var split in Splits)
+                {
+                    Bass.BASS_StreamFree(split);
+                }
+                UnloadLibraries();
+                Tools.ReleaseStreamHandle();
+                return false;
+            }
+            return true;
         }
 
         public enum MoggSplitFormat
@@ -172,7 +344,7 @@ namespace C3Tools
             OGG, WAV
         }
 
-        private bool InitBass()
+        private static bool InitBass(List<string> ErrorLog, NemoTools Tools)
         {
             try
             {
@@ -196,7 +368,7 @@ namespace C3Tools
             }
         }
 
-        public int[] ArrangeStreamChannels(int totalChannels, bool isOgg)
+        public static int[] ArrangeStreamChannels(int totalChannels, bool isOgg)
         {
             var channels = new int[totalChannels];
             if (isOgg)
@@ -255,138 +427,7 @@ namespace C3Tools
             return channels;
         }
 
-        private bool DoSplitMogg(string folder, string StemsToSplit, MoggSplitFormat format, string quality)
-        {
-            var ext = "ogg";
-            if (format == MoggSplitFormat.WAV)
-            {
-                ext = "wav";
-            }
-            if (!Directory.Exists(folder))
-            {
-                Directory.CreateDirectory(folder);
-            }
-            var drums = Path.Combine(folder, "drums." + ext);
-            var drums1 = Path.Combine(folder, "drums_1." + ext);
-            var drums2 = Path.Combine(folder, "drums_2." + ext);
-            var drums3 = Path.Combine(folder, "drums_3." + ext);
-            var bass = Path.Combine(folder, "bass." + ext);
-            var rhythm = Path.Combine(folder, "rhythm." + ext);
-            var guitar = Path.Combine(folder, "guitar." + ext);
-            var keys = Path.Combine(folder, "keys." + ext);
-            var vocals = Path.Combine(folder, "vocals." + ext);
-            var backing = Path.Combine(folder, "backing." + ext);
-            var song = Path.Combine(folder, "song." + ext);
-            var crowd = Path.Combine(folder, "crowd." + ext);
-            var tracks = new List<string> { drums, drums1, drums2, drums3, bass, guitar, keys, vocals, backing, crowd };
-            foreach (var track in tracks)
-            {
-                Tools.DeleteFile(track);
-            }
-            try
-            {
-                if (!InitBass()) return false;
-                SourceStream = Bass.BASS_StreamCreateFile(Tools.GetOggStreamIntPtr(), 0, Tools.PlayingSongOggData.Length, BASSFlag.BASS_STREAM_DECODE);
-                var info = Bass.BASS_ChannelGetInfo(SourceStream);
-                var ArrangedChannels = ArrangeStreamChannels(info.chans, format == MoggSplitFormat.OGG);
-                var isSlave = false;
-                if (Parser.Songs[0].ChannelsDrums > 0 && (StemsToSplit.Contains("allstems") || StemsToSplit.Contains("drums")))
-                {
-                    switch (Parser.Songs[0].ChannelsDrums)
-                    {
-                        case 2:
-                            PrepareChannelsToSplit(0, ArrangedChannels, 2, GetStemVolume(0), drums, format, quality, false);
-                            break;
-                        case 3:
-                            PrepareChannelsToSplit(0, ArrangedChannels, 1, GetStemVolume(0), drums1, format, quality, false);
-                            PrepareChannelsToSplit(1, ArrangedChannels, 2, GetStemVolume(1), drums2, format, quality);
-                            break;
-                        case 4:
-                            PrepareChannelsToSplit(0, ArrangedChannels, 1, GetStemVolume(0), drums1, format, quality, false);
-                            PrepareChannelsToSplit(1, ArrangedChannels, 1, GetStemVolume(1), drums2, format, quality);
-                            PrepareChannelsToSplit(2, ArrangedChannels, 2, GetStemVolume(2), drums3, format, quality);
-                            break;
-                        case 5:
-                            PrepareChannelsToSplit(0, ArrangedChannels, 1, GetStemVolume(0), drums1, format, quality, false);
-                            PrepareChannelsToSplit(1, ArrangedChannels, 2, GetStemVolume(1), drums2, format, quality);
-                            PrepareChannelsToSplit(3, ArrangedChannels, 2, GetStemVolume(3), drums3, format, quality);
-                            break;
-                        case 6:
-                            PrepareChannelsToSplit(0, ArrangedChannels, 2, GetStemVolume(0), drums1, format, quality, false);
-                            PrepareChannelsToSplit(2, ArrangedChannels, 2, GetStemVolume(2), drums2, format, quality);
-                            PrepareChannelsToSplit(4, ArrangedChannels, 2, GetStemVolume(4), drums3, format, quality);
-                            break;
-                    }
-                    isSlave = true;
-                }
-                var channel = Parser.Songs[0].ChannelsDrums;
-                if (Parser.Songs[0].ChannelsBass > 0 && (StemsToSplit.Contains("allstems") || StemsToSplit.Contains("bass") || StemsToSplit.Contains("rhythm")))
-                {
-                    PrepareChannelsToSplit(channel, ArrangedChannels, Parser.Songs[0].ChannelsBass, GetStemVolume(channel), StemsToSplit.Contains("rhythm") ? rhythm : bass, format, quality, isSlave);
-                    isSlave = true;
-                }
-                channel += Parser.Songs[0].ChannelsBass;
-                if (Parser.Songs[0].ChannelsGuitar > 0 && (StemsToSplit.Contains("allstems") || StemsToSplit.Contains("guitar")))
-                {
-                    PrepareChannelsToSplit(channel, ArrangedChannels, Parser.Songs[0].ChannelsGuitar, GetStemVolume(channel), guitar, format, quality, isSlave);
-                    isSlave = true;
-                }
-                channel += Parser.Songs[0].ChannelsGuitar;
-                if (Parser.Songs[0].ChannelsVocals > 0 && (StemsToSplit.Contains("allstems") || StemsToSplit.Contains("vocals")))
-                {
-                    PrepareChannelsToSplit(channel, ArrangedChannels, Parser.Songs[0].ChannelsVocals, GetStemVolume(channel), vocals, format, quality, isSlave);
-                    isSlave = true;
-                }
-                channel += Parser.Songs[0].ChannelsVocals;
-                if (Parser.Songs[0].ChannelsKeys > 0 && (StemsToSplit.Contains("allstems") || StemsToSplit.Contains("keys")))
-                {
-                    PrepareChannelsToSplit(channel, ArrangedChannels, Parser.Songs[0].ChannelsKeys, GetStemVolume(channel), keys, format, quality, isSlave);
-                    isSlave = true;
-                }
-                channel += Parser.Songs[0].ChannelsKeys;
-                if (Parser.Songs[0].ChannelsBacking() > 0 && (StemsToSplit.Contains("allstems") || StemsToSplit.Contains("backing") || StemsToSplit.Contains("song")))
-                {
-                    PrepareChannelsToSplit(channel, ArrangedChannels, Parser.Songs[0].ChannelsBacking(), GetStemVolume(channel), StemsToSplit.Contains("song") ? song : backing, format, quality, isSlave);
-                    isSlave = true;
-                }
-                channel += Parser.Songs[0].ChannelsBacking();
-                if (Parser.Songs[0].ChannelsCrowd > 0 && (StemsToSplit.Contains("allstems") || StemsToSplit.Contains("crowd")))
-                {
-                    PrepareChannelsToSplit(channel, ArrangedChannels, Parser.Songs[0].ChannelsCrowd, GetStemVolume(channel), crowd, format, quality, isSlave);
-                }
-                while (true)
-                {
-                    var buffer = new byte[20000];
-                    var c = Bass.BASS_ChannelGetData(Splits[0], buffer, buffer.Length);
-                    if (c < 0) break;
-                    for (var i = 1; i < Splits.Count; i++)
-                    {
-                        while (Bass.BASS_ChannelGetData(Splits[i], buffer, buffer.Length) > 0){}
-                    }
-                }
-                foreach (var split in Splits)
-                {
-                    Bass.BASS_StreamFree(split);
-                }
-                UnloadLibraries();
-                Tools.ReleaseStreamHandle();
-            }
-            catch (Exception ex)
-            {
-                ErrorLog.Add("Error splitting mogg file:");
-                ErrorLog.Add(ex.Message);
-                foreach (var split in Splits)
-                {
-                    Bass.BASS_StreamFree(split);
-                }
-                UnloadLibraries();
-                Tools.ReleaseStreamHandle();
-                return false;
-            }
-            return true;
-        }
-
-        private void PrepareChannelsToSplit(int index, IList<int> ArrangedChannels, int channels, float vol, string file, MoggSplitFormat format, string quality, bool slave = true)
+        private static void PrepareChannelsToSplit(int index, IList<int> ArrangedChannels, int channels, float vol, string file, MoggSplitFormat format, string quality, int SourceStream, List<int> Splits, bool slave = true)
         {
             var channel_map = new int[channels == 2 ? 3 : 2];
             channel_map[0] = ArrangedChannels[index];
@@ -414,7 +455,7 @@ namespace C3Tools
             }
         }
 
-        private float GetStemVolume(int curr_channel)
+        private static float GetStemVolume(DTAParser Parser, int curr_channel)
         {
             const double max_dB = 1.0;
             var volumes = Parser.Songs[0].AttenuationValues.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);

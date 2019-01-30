@@ -1,9 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C3 Tools", "C3 Tools\C3 Tools.csproj", "{E72DC7F9-6786-4B1B-879B-2F81026FE688}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C3 Tools", "C3 Tools\C3 Tools.csproj", "{447BF1D1-4A4C-4BDB-A267-CE155C3349AB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7D2DA1BD-65B8-47DD-90D5-299BA0EA71BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "x360", "x360\x360.csproj", "{E804FFF3-6629-4F06-93FD-7673429296B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,12 +10,13 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E72DC7F9-6786-4B1B-879B-2F81026FE688}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E72DC7F9-6786-4B1B-879B-2F81026FE688}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E72DC7F9-6786-4B1B-879B-2F81026FE688}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E72DC7F9-6786-4B1B-879B-2F81026FE688}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
+		{447BF1D1-4A4C-4BDB-A267-CE155C3349AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{447BF1D1-4A4C-4BDB-A267-CE155C3349AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{447BF1D1-4A4C-4BDB-A267-CE155C3349AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{447BF1D1-4A4C-4BDB-A267-CE155C3349AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E804FFF3-6629-4F06-93FD-7673429296B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E804FFF3-6629-4F06-93FD-7673429296B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E804FFF3-6629-4F06-93FD-7673429296B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E804FFF3-6629-4F06-93FD-7673429296B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

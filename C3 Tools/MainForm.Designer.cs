@@ -1,4 +1,7 @@
-﻿namespace C3Tools
+﻿using System.Drawing;
+using System.IO;
+
+namespace C3Tools
 {
     partial class MainForm
     {
@@ -925,7 +928,7 @@
             this.picBanner.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.picBanner.ContextMenuStrip = this.contextMenuStrip3;
             this.picBanner.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.picBanner.Image = global::C3Tools.Properties.Resources.c3banner;
+            this.picBanner.Image = new Bitmap(new MemoryStream(Resources.c3banner));
             this.picBanner.Location = new System.Drawing.Point(0, 315);
             this.picBanner.Name = "picBanner";
             this.picBanner.Size = new System.Drawing.Size(715, 80);
@@ -1177,7 +1180,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
-            this.BackgroundImage = global::C3Tools.Properties.Resources.bg3;
+            this.BackgroundImage = new Bitmap(new MemoryStream(Resources.bg3));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(714, 395);
             this.ContextMenuStrip = this.contextMenuStrip2;
@@ -1208,7 +1211,8 @@
             this.Controls.Add(this.btnQuickDTAEditor);
             this.Controls.Add(this.picBanner);
             this.DoubleBuffered = true;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            // TODO
+//            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(160, 110);
             this.Name = "MainForm";

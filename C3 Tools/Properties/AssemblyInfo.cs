@@ -4,12 +4,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("C3 CON Tools")]
-[assembly: AssemblyDescription("Tool suite to create, edit and work with Rock Band CON files")]
+[assembly: AssemblyTitle("C3_Tools")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("www.customscreators.com")]
-[assembly: AssemblyProduct("C3 CON Tools")]
-[assembly: AssemblyCopyright("Copyright © TrojanNemo, 2013-2016")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("C3_Tools")]
+[assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("7f6620b4-8240-4b46-9ed3-a558a9a71b33")]
+[assembly: Guid("447BF1D1-4A4C-4BDB-A267-CE155C3349AB")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.9.9.0")]
-[assembly: AssemblyFileVersion("3.9.9.0")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

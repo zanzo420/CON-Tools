@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using C3Tools.Properties;
 using C3Tools.x360;
 using Un4seen.Bass;
 using SearchOption = System.IO.SearchOption;
@@ -467,11 +466,11 @@ namespace C3Tools
         {
             if (backgroundWorker1.CancellationPending) return;
             Log("Separating mogg file into its component ogg files");
-            var Splitter = new MoggSplitter();
-            var split = Splitter.SplitMogg(CON, folder, "allstems|rhythm|song", MoggSplitter.MoggSplitFormat.WAV, domainQuality.Text);
+            List<string> ErrorLog = new List<string>();
+            var split = MoggSplitter.SplitMogg(CON, folder, "allstems|rhythm|song", MoggSplitter.MoggSplitFormat.WAV, domainQuality.Text, ErrorLog);
             if (!split)
             {
-                foreach (var error in Splitter.ErrorLog)
+                foreach (var error in ErrorLog)
                 {
                     Log(error);
                 }
@@ -646,7 +645,35 @@ namespace C3Tools
                 {
                     btnBegin.Text = "Cancel";
                     toolTip1.SetToolTip(btnBegin, "Click to cancel process");
-                    backgroundWorker1.RunWorkerAsync();
+                    if (!ProcessFiles())
+                    {
+                        Log("There was an error processing the files ... stopping here");
+                        EnableDisable(true);
+                    }
+                    else
+                    {
+                        Log("Done!");
+                        endTime = DateTime.Now;
+                        var timeDiff = endTime - startTime;
+                        Log("Process took " + timeDiff.Minutes + (timeDiff.Minutes == 1 ? " minute" : " minutes") + " and " + (timeDiff.Minutes == 0 && timeDiff.Seconds == 0 ? "1 second" : timeDiff.Seconds + " seconds"));
+                        Log("Click 'Reset' to start again or just close me down");
+                        if (cleanUppngxboxFiles.Checked)
+                        {
+                            //clear up any leftover png_xbox files
+                            var xbox_files = Directory.GetFiles(txtFolder.Text, "*.png_xbox", SearchOption.AllDirectories);
+                            foreach (var xbox_file in xbox_files)
+                            {
+                                Tools.DeleteFile(xbox_file);
+                            }
+                        }
+                        btnReset.Enabled = true;
+                        btnReset.Visible = true;
+                        picWorking.Visible = false;
+                        lstLog.Cursor = Cursors.Default;
+                        Cursor = lstLog.Cursor;
+                        toolTip1.SetToolTip(btnBegin, "Click to begin");
+                        btnBegin.Text = "&Begin";
+                    }
                 }
                 else
                 {
@@ -726,33 +753,10 @@ namespace C3Tools
 
         private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            if (ProcessFiles()) return;
-            Log("There was an error processing the files ... stopping here");
         }
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
-            Log("Done!");
-            endTime = DateTime.Now;
-            var timeDiff = endTime - startTime;
-            Log("Process took " + timeDiff.Minutes + (timeDiff.Minutes == 1 ? " minute" : " minutes") + " and " + (timeDiff.Minutes == 0 && timeDiff.Seconds == 0 ? "1 second" : timeDiff.Seconds + " seconds"));
-            Log("Click 'Reset' to start again or just close me down");
-            if (cleanUppngxboxFiles.Checked)
-            {
-                //clear up any leftover png_xbox files
-                var xbox_files = Directory.GetFiles(txtFolder.Text, "*.png_xbox", SearchOption.AllDirectories);
-                foreach (var xbox_file in xbox_files)
-                {
-                    Tools.DeleteFile(xbox_file);
-                }
-            }
-            btnReset.Enabled = true;
-            btnReset.Visible = true;
-            picWorking.Visible = false;
-            lstLog.Cursor = Cursors.Default;
-            Cursor = lstLog.Cursor;
-            toolTip1.SetToolTip(btnBegin, "Click to begin");
-            btnBegin.Text = "&Begin";
         }
 
         private void picPin_MouseClick(object sender, MouseEventArgs e)
@@ -761,11 +765,11 @@ namespace C3Tools
             switch (picPin.Tag.ToString())
             {
                 case "pinned":
-                    picPin.Image = Resources.unpinned;
+                    picPin.Image = new Bitmap(new MemoryStream(Resources.unpinned));
                     picPin.Tag = "unpinned";
                     break;
                 case "unpinned":
-                    picPin.Image = Resources.pinned;
+                    picPin.Image = new Bitmap(new MemoryStream(Resources.pinned));
                     picPin.Tag = "pinned";
                     break;
             }
